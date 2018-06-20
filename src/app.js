@@ -1,6 +1,6 @@
 /**
-* @author Alejandro Galue <agalue@opennms.org>
-*/
+ * @author Alejandro Galue <agalue@opennms.org>
+ */
 
 'use strict';
 
@@ -42,6 +42,28 @@ angular.module('node-extensions', [
  * @description The controller for managing node extensions
  */
 .controller('NodeExtensionsCtrl', function($scope, $http, $q) {
+
+  /**
+   * @description The node ID (external parameter)
+   * Obtained from the directive (named as 'id' on the HTML tag).
+   *
+   * @ngdoc property
+   * @name NodeExtensionsCtrl#nodeId
+   * @propertyOf NodeExtensionsCtrl
+   * @returns {integer} The node ID
+   */
+  $scope.nodeId;
+
+  /**
+   * @description The system object ID (external parameter)
+   * Obtained from the directive (named as 'oid' on the HTML tag).
+   *
+   * @ngdoc property
+   * @name NodeExtensionsCtrl#sysObjectId
+   * @propertyOf NodeExtensionsCtrl
+   * @returns {string} The system object ID
+   */
+  $scope.sysObjectId;
 
   /**
    * @description The columns array.
@@ -101,11 +123,13 @@ angular.module('node-extensions', [
    */
   $scope.fetchMetricValue = function(id, metric) {
     var deferred = $q.defer();
+    console.debug('Getting value for metric ' + decodeURIComponent(id) + '.' + metric);
     $http.get('rest/measurements/' + id + '/' + metric + '?start=-900000')
       .success(function(info) {
         var values = info.columns[0].values.reverse();
         for (var i=0; i<values.length; i++) {
           if (values[i] !== 'NaN') {
+            console.debug('Got it: ' + values[i]);
             deferred.resolve(Math.floor(values[i]));
             break;
           }
@@ -130,13 +154,13 @@ angular.module('node-extensions', [
     var deferred = $q.defer();
     $http.get('rest/resources/fornode/' + id)
       .success(function(data) {
-        $scope.loading = true;
         deferred.resolve(data.children.resource);
       })
       .error(function() {
         $scope.loading = false;
         deferred.reject();
       });
+    return deferred.promise;
   };
 
   /**
@@ -154,9 +178,16 @@ angular.module('node-extensions', [
    */ 
   $scope.getPluginImplementation = function() {
     if ($scope.sysObjectId.indexOf('.1.3.6.1.4.1.25053.3.1.5.') != -1) {
-      return $scope.pluginSmartZoneData;
+      console.log("Device with ID " + $scope.nodeId + " is a Ruckus ZD, loading plugin.");
+      return $scope.pluginRuckusZoneDirectorData;
     } else if ($scope.sysObjectId.indexOf('.1.3.6.1.4.1.25053.3.1.11.') != -1) {
-      return $scope.pluginZoneDirectorData;
+      console.log("Device with ID " + $scope.nodeId + " is a Ruckus SmartZone, loading plugin.");
+      return $scope.pluginRuckusSmartZoneData;
+    } else if ($scope.sysObjectId == '.1.3.6.1.4.1.9..1.2170' || $scope.sysObjectId == '.1.3.6.1.4.1.9..1.2370') {
+      console.log("Device with ID " + $scope.nodeId + " is a Cisco WLC, loading plugin.");
+      return $scope.pluginCiscoWlcData;
+      console.log("Device with ID " + $scope.nodeId + " is a Cisco WLC, loading plugin.");
+      return $scope.pluginCiscoWlcData;
     }
     return undefined;
   }
@@ -166,6 +197,11 @@ angular.module('node-extensions', [
    * This method should populate the 'columns', 'rows' and the 'title' on the $scope.
    *
    * Requires the following metrics for the SNMP Collector in OpenNMS:
+   * 
+   * <resourceType name="ruckusZDWLANAPEntry" label="Ruckus ZoneDirector WLAN AP" resourceLabel="${rzdAPDescripion}">
+   *    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+   *    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   * </resourceType>
    * 
    * <!-- From RUCKUS-ZD-WLAN-MIB; ZoneDirector Devices -->
    * <group name="ruckusZDWLANAPTable" ifType="all">
@@ -181,14 +217,14 @@ angular.module('node-extensions', [
    * @param {array} resources The list of OpenNMS Resources from the Resources ReST API
    */
   $scope.pluginRuckusZoneDirectorData = function(resources) {
-    for (r in resources) {
+    for (var r of resources) {
       if (r.id.match(/ruckusZDWLANAPEntry/)) {
         $scope.title = "Ruckus ZoneDirector Access Points";
         $scope.columns = [
           { name: 'description', label: 'Description' },
-          { name: 'iPAddress', label: 'IP Address' },
+          { name: 'ipAddress',   label: 'IP Address' },
           { name: 'numStations', label: '# Stations' },
-          { name: 'status', label: 'Status' }
+          { name: 'status',      label: 'Status' }
         ];
         var row = {
           description: r.stringPropertyAttributes.rzdAPDescripion,
@@ -197,14 +233,16 @@ angular.module('node-extensions', [
           status: 'Unknown'
         };
         switch (r.stringPropertyAttributes.rzdAPStatus) {
-          case "0": row.status = "Disconnected"; break;
-          case "1": row.status = "Connected"; break;
-          case "2": row.status = "Approval Pending"; break;
-          case "3": row.status = "Upgrading Firmware"; break;
-          case "4": row.status = "Provisioning"; break;
+          case '0': row.status = 'Disconnected'; break;
+          case '1': row.status = 'Connected'; break;
+          case '2': row.status = 'Approval Pending'; break;
+          case '3': row.status = 'Upgrading Firmware'; break;
+          case '4': row.status = 'Provisioning'; break;
         }
+        // TODO Validate if rrdGraphAttributes contains rzdAPNumSta
         var id = encodeURIComponent(r.id.replace('%3A',':'));
         $scope.fetchMetricValue(id, 'rzdAPNumSta').then(function(value) {
+          console.debug('Updating UI with value ' + value);
           row.numStations = value;
         });
         $scope.rows.push(row);
@@ -217,6 +255,11 @@ angular.module('node-extensions', [
    * This method should populate the 'columns', 'rows' and the 'title' on the $scope.
    *
    * Requires the following metrics for the SNMP Collector in OpenNMS:
+   * 
+   * <resourceType name="ruckusSZAPEntry" label="Ruckus SmartZone AP" resourceLabel="${rszAPName}">
+   *    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+   *    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   * </resourceType>
    * 
    * <!-- From RUCKUS-SZ-WLAN-MIB; SmartZone Devices -->
    * <group name="ruckusSZAPTable" ifType="all">
@@ -232,14 +275,14 @@ angular.module('node-extensions', [
    * @param {array} resources The list of OpenNMS Resources from the Resources ReST API
    */
   $scope.pluginRuckusSmartZoneData = function(resources) {
-    for (r in resources) {
+    for (var r of resources) {
       if (r.id.match(/ruckusSZAPEntry/)) {
         $scope.title = "Ruckus SmartZone Access Points";
         $scope.columns = [
           { name: 'description', label: 'Description' },
-          { name: 'iPAddress', label: 'IP Address' },
+          { name: 'ipAddress',   label: 'IP Address' },
           { name: 'numStations', label: '# Stations' },
-          { name: 'status', label: 'Status' }
+          { name: 'status',      label: 'Status' }
         ];
         var row = {
           description: r.stringPropertyAttributes.rszAPName,
@@ -247,8 +290,70 @@ angular.module('node-extensions', [
           numStations: '...',
           status: r.stringPropertyAttributes.rszAPConnStatus
         };
+        // TODO Validate if rrdGraphAttributes contains rszAPNumSta
         var id = encodeURIComponent(r.id.replace('%3A',':'));
-        $scope.fetchMetricValue(id, 'rzdAPNumSta').then(function(value) {
+        $scope.fetchMetricValue(id, 'rszAPNumSta').then(function(value) {
+          console.debug('Updating UI with value ' + value);
+          row.numStations = value;
+        });
+        $scope.rows.push(row);
+      }
+    }
+  }
+
+  /**
+   * @description Plugin implementation for the Cisco WLC devices.
+   * This method should populate the 'columns', 'rows' and the 'title' on the $scope.
+   *
+   * Requires the following metrics for the SNMP Collector in OpenNMS:
+   * 
+   * <resourceType name="ciscoAPMacAddress" label="Cisco WLC AP" resourceLabel="${cLApName}">
+   *    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+   *    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   * </resourceType>
+   * 
+   * <!-- From CISCO-LWAPP-AP-MIB. cLApTable is indexed by cLApSysMacAddress which has a type of MacAddress -->
+   * <group name="cLApTable" ifType="all">
+   *    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.1.1.1.5"  instance="ciscoAPMacAddress" alias="cLApName"       type="string"/>
+   *    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.1.1.1.51" instance="ciscoAPMacAddress" alias="cLApAssocCount" type="integer"/>
+   * </group>
+   * <!-- From AIRESPACE-WIRELESS-MIB. bsnAPTable is indexed by bsnAPDot3MacAddress which has a type of MacAddress -->
+   * <group name="bsnAPTable" ifType="all">
+   *    <mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.3"  instance="ciscoAPMacAddress" alias="bsnAPName"       type="string"/>
+   *    <mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.6"  instance="ciscoAPMacAddress" alias="bsnAPOperStatus" type="string"/>
+   *    <mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.19" instance="ciscoAPMacAddress" alias="bsnApIpAddress"  type="string"/>
+   * </group>
+   *
+   * @name NodeExtensionsCtrl:pluginCiscoWlcData
+   * @ngdoc method
+   * @methodOf NodeExtensionsCtrl
+   * @param {array} resources The list of OpenNMS Resources from the Resources ReST API
+   */
+  $scope.pluginCiscoWlcData = function(resources) {
+    for (var r of resources) {
+      if (r.id.match(/ciscoAPMacAddress/)) {
+        $scope.title = "Cisco WLC Access Points";
+        $scope.columns = [
+          { name: 'description', label: 'Description' },
+          { name: 'iPAddress',   label: 'IP Address' },
+          { name: 'numStations', label: '# Stations' },
+          { name: 'status',      label: 'Status' }
+        ];
+        var row = {
+          description: r.stringPropertyAttributes.bsnAPName,
+          ipAddress: r.stringPropertyAttributes.bsnApIpAddress,
+          numStations: '...',
+          status: 'Unknown'
+        };
+        switch (r.stringPropertyAttributes.bsnAPOperStatus) {
+          case '1': row.status = 'Associated'; break;
+          case '2': row.status = 'Disassociating'; break;
+          case '3': row.status = 'Downloading'; break;
+        }
+        // TODO Validate if rrdGraphAttributes contains cLApAssocCount
+        var id = encodeURIComponent(r.id.replace('%3A',':'));
+        $scope.fetchMetricValue(id, 'cLApAssocCount').then(function(value) {
+          console.debug('Updating UI with value ' + value);
           row.numStations = value;
         });
         $scope.rows.push(row);
@@ -266,14 +371,18 @@ angular.module('node-extensions', [
    * Each extension implementation will receive an array with the OpenNMS resources, and
    * it should populate $scope.title, $scope.columns, and $scope.rows.
    */
-   var plugin = $scope.getPluginImplementation();
-   if (plugin) {
-     $scope.fetchResources($scope.nodeId).then(function(resources) {
-       plugin(resources);
-     });
-   } else {
-     $scope.loading = false;
-   }
+  console.debug('Getting plugin implementation...');
+  var plugin = $scope.getPluginImplementation();
+  if (plugin) {
+    console.debug('Plugin found, getting data...');
+    $scope.fetchResources($scope.nodeId).then(function(resources) {
+      plugin(resources);
+      $scope.loading = false;
+    });
+  } else {
+    console.debug('No plugins were found...');
+    $scope.loading = false;
+  }
 });
 
 // Bootstrap to a an element with ID 'node-extensions'

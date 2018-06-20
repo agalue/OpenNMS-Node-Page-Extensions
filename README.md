@@ -48,3 +48,10 @@ Each implementation is a method of the Angular controller that receives the list
 * `$scope.rows`, with an array of objects, where each object contains the values for each column. That means, each row object contains as `keys`, the `name` of the column, and the actual value to display on the table.
 
 Each resource object contains the string attributes defined on the respective data collection configuration, and offers an async method to retrieve a single value of a given metric for the chosen resource using the Measurements API.
+
+# Execute local tests
+
+```SHELL
+npm install
+npm test
+```
