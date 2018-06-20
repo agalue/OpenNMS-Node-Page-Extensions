@@ -183,9 +183,7 @@ angular.module('node-extensions', [
     } else if ($scope.sysObjectId.indexOf('.1.3.6.1.4.1.25053.3.1.11.') != -1) {
       console.log("Device with ID " + $scope.nodeId + " is a Ruckus SmartZone, loading plugin.");
       return $scope.pluginRuckusSmartZoneData;
-    } else if ($scope.sysObjectId == '.1.3.6.1.4.1.9..1.2170' || $scope.sysObjectId == '.1.3.6.1.4.1.9..1.2370') {
-      console.log("Device with ID " + $scope.nodeId + " is a Cisco WLC, loading plugin.");
-      return $scope.pluginCiscoWlcData;
+    } else if ($scope.sysObjectId == '.1.3.6.1.4.1.9.1.2170' || $scope.sysObjectId == '.1.3.6.1.4.1.9.1.2370') {
       console.log("Device with ID " + $scope.nodeId + " is a Cisco WLC, loading plugin.");
       return $scope.pluginCiscoWlcData;
     }
@@ -219,7 +217,7 @@ angular.module('node-extensions', [
   $scope.pluginRuckusZoneDirectorData = function(resources) {
     for (var r of resources) {
       if (r.id.match(/ruckusZDWLANAPEntry/)) {
-        $scope.title = "Ruckus ZoneDirector Access Points";
+        $scope.title = 'Ruckus ZoneDirector Access Points';
         $scope.columns = [
           { name: 'description', label: 'Description' },
           { name: 'ipAddress',   label: 'IP Address' },
@@ -277,7 +275,7 @@ angular.module('node-extensions', [
   $scope.pluginRuckusSmartZoneData = function(resources) {
     for (var r of resources) {
       if (r.id.match(/ruckusSZAPEntry/)) {
-        $scope.title = "Ruckus SmartZone Access Points";
+        $scope.title = 'Ruckus SmartZone Access Points';
         $scope.columns = [
           { name: 'description', label: 'Description' },
           { name: 'ipAddress',   label: 'IP Address' },
@@ -332,10 +330,10 @@ angular.module('node-extensions', [
   $scope.pluginCiscoWlcData = function(resources) {
     for (var r of resources) {
       if (r.id.match(/ciscoAPMacAddress/)) {
-        $scope.title = "Cisco WLC Access Points";
+        $scope.title = 'Cisco WLC Access Points';
         $scope.columns = [
           { name: 'description', label: 'Description' },
-          { name: 'iPAddress',   label: 'IP Address' },
+          { name: 'ipAddress',   label: 'IP Address' },
           { name: 'numStations', label: '# Stations' },
           { name: 'status',      label: 'Status' }
         ];

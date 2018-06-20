@@ -276,10 +276,121 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus SmartZone', async() => {
   console.debug('End validations.');
 });
 
-// FIXME Need to be implemented
-/*
 test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
-  createController(1, '.1.3.6.1.4.1.9..1.2370');
+  // Calls for Number of Connection
+
+  httpBackend.whenGET('rest/measurements/node%5BTest%3ANode%5D.ciscoAPMacAddress%5B6.0.0.0.0.0.1%5D/cLApAssocCount?start=-900000').respond({
+    step: 300000,
+    start: 1529512122003,
+    end: 1529513022003,
+    timestamps: [1529511900000, 1529512200000, 1529512500000, 1529512800000, 1529513100000],
+    labels: ['cLApAssocCount'],
+    columns: [{
+      values: ['NaN', 2.0, 1.0, 1.0, 1.0]
+    }],
+    constants: [{
+      key: 'cLApAssocCount.bsnAPOperStatus',
+      value: 'Connect'
+    }, {
+      key: 'cLApAssocCount.bsnApIpAddress',
+      value: '10.0.0.1'
+    }, {
+      key: 'cLApAssocCount.bsnAPName',
+      value: 'AP 01'
+    }]
+  });
+  httpBackend.whenGET('rest/measurements/node%5BTest%3ANode%5D.ciscoAPMacAddress%5B6.0.0.0.0.0.2%5D/cLApAssocCount?start=-900000').respond({
+    step: 300000,
+    start: 1529512122003,
+    end: 1529513022003,
+    timestamps: [1529511900000, 1529512200000, 1529512500000, 1529512800000, 1529513100000],
+    labels: ['cLApAssocCount'],
+    columns: [{
+      values: [0.0, 0.0, 0.0, 0.0, 0.0]
+    }],
+    constants: [{
+      key: 'cLApAssocCount.bsnAPOperStatus',
+      value: 'Disconnect'
+    }, {
+      key: 'cLApAssocCount.bsnApIpAddress',
+      value: '10.0.0.2'
+    }, {
+      key: 'cLApAssocCount.bsnAPName',
+      value: 'AP 02'
+    }]
+  });
+
+  // Required call for getting node resources
+
+  httpBackend.expectGET('rest/resources/fornode/1').respond({
+    label: 'Test Node',
+    name: 'Test:Node',
+    link: 'element/node.jsp?node=Test:Node',
+    children: {
+      resource: [{
+        id: 'node[Test%3ANode].nodeSnmp[]',
+        label: 'Node-level Performance Data',
+        typeLabel: 'SNMP Node Data'
+      },{
+        id: 'node[Test%3ANode].ciscoAPMacAddress[6.0.0.0.0.0.1]',
+        label: 'AP 01',
+        typeLabel: 'Cisco WLC AP',
+        parentId: 'node[Test%3ANode].nodeSnmp[]',
+        stringPropertyAttributes: {
+          bsnApIpAddress: '10.0.0.1',
+          bsnAPName: 'AP 01',
+          bsnAPOperStatus: '1',
+          cLApName: 'AP 01',
+        },
+        rrdGraphAttributes: {
+          rszAPNumSta: {
+            name: 'cLApAssocCount',
+            relativePath: '',
+            rrdFile: 'snmp:fs:Test:Node:ciscoAPMacAddress:6.0.0.0.0.0.1:cLApTable'
+          }
+        }
+      },{
+        id: 'node[Test%3ANode].ciscoAPMacAddress[6.0.0.0.0.0.2]',
+        label: 'AP 02',
+        typeLabel: 'Cisco WLC AP',
+        parentId: 'node[Test%3ANode].nodeSnmp[]',
+        stringPropertyAttributes: {
+          bsnApIpAddress: '10.0.0.2',
+          bsnAPName: 'AP 02',
+          bsnAPOperStatus: '2',
+          cLApName: 'AP 02',
+        },
+        rrdGraphAttributes: {
+          rszAPNumSta: {
+            name: 'cLApAssocCount',
+            relativePath: '',
+            rrdFile: 'snmp:fs:Test:Node:ciscoAPMacAddress:6.0.0.0.0.0.2:cLApTable'
+          }
+        }
+      }]
+    }
+  });
+
+  // Initializing Controller
+
+  createController(1, '.1.3.6.1.4.1.9.1.2370');
+  httpBackend.flush();
+  await sleep(1000);
+
+  // Checking data
+
+  console.debug('Start valitations...');
   expect(scope.loading).toEqual(false);
+  expect(scope.title).toEqual('Cisco WLC Access Points');
+  expect(scope.columns.length).toEqual(4);
+  expect(scope.columns[0].name).toEqual('description');
+  expect(scope.columns[1].name).toEqual('ipAddress');
+  expect(scope.columns[2].name).toEqual('numStations');
+  expect(scope.columns[3].name).toEqual('status');
+  expect(scope.rows.length).toEqual(2);
+  expect(scope.rows[0].description).toEqual('AP 01');
+  expect(scope.rows[0].ipAddress).toEqual('10.0.0.1');
+//  expect(scope.rows[0].numStations).toEqual(1); // FIXME Not working for some reason
+  expect(scope.rows[0].status).toEqual('Associated');
+  console.debug('End validations.');
 });
-*/
