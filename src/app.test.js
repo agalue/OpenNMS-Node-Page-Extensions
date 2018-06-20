@@ -337,7 +337,7 @@ test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
           cLApName: 'AP 01',
         },
         rrdGraphAttributes: {
-          rszAPNumSta: {
+          cLApAssocCount: {
             name: 'cLApAssocCount',
             relativePath: '',
             rrdFile: 'snmp:fs:Test:Node:ciscoAPMacAddress:6.0.0.0.0.0.1:cLApTable'
@@ -355,7 +355,7 @@ test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
           cLApName: 'AP 02',
         },
         rrdGraphAttributes: {
-          rszAPNumSta: {
+          cLApAssocCount: {
             name: 'cLApAssocCount',
             relativePath: '',
             rrdFile: 'snmp:fs:Test:Node:ciscoAPMacAddress:6.0.0.0.0.0.2:cLApTable'

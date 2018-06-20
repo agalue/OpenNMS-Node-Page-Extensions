@@ -118,14 +118,16 @@ angular.module('node-extensions', [
    * @name NodeExtensionsCtrl:fetchMetricAndUpdateRow
    * @ngdoc method
    * @methodOf NodeExtensionsCtrl
-   * @param {string} id The OpenNMS Resource ID
+   * @param {object} resource The OpenNMS Resource object
    * @param {string} metric The name of the desired metric
    * @param {object} row The row to be updated on successful retrieval of the data
    * @param {string} field The name of row field to update
    */
-  $scope.fetchMetricAndUpdateRow = function(id, metric, row, field) {
-    console.debug('Getting value for metric ' + decodeURIComponent(id) + '.' + metric);
-    $http.get('rest/measurements/' + id + '/' + metric + '?start=-900000')
+  $scope.fetchMetricAndUpdateRow = function(resource, metric, row, field) {
+    console.debug('Getting value for metric ' + resource.id + '.' + metric);
+    if (resource.rrdGraphAttributes[metric]) {
+      var id = encodeURIComponent(resource.id.replace('%3A',':'));
+      $http.get('rest/measurements/' + id + '/' + metric + '?start=-900000')
       .success(function(info) {
         var values = info.columns[0].values.reverse();
         for (var i=0; i<values.length; i++) {
@@ -136,6 +138,9 @@ angular.module('node-extensions', [
           }
         }
       });
+    } else {
+      console.warn('The metric ' + metric + ' is not available for ' + resource.id);
+    }
   };
 
   /**
@@ -235,10 +240,8 @@ angular.module('node-extensions', [
           case '3': row.status = 'Upgrading Firmware'; break;
           case '4': row.status = 'Provisioning'; break;
         }
-        // TODO Validate if rrdGraphAttributes contains rzdAPNumSta
-        var id = encodeURIComponent(r.id.replace('%3A',':'));
-        $scope.fetchMetricAndUpdateRow(id, 'rzdAPNumSta', row, 'numStations');
         $scope.rows.push(row);
+        $scope.fetchMetricAndUpdateRow(r, 'rzdAPNumSta', row, 'numStations');
       }
     }
   }
@@ -283,10 +286,8 @@ angular.module('node-extensions', [
           numStations: '...',
           status: r.stringPropertyAttributes.rszAPConnStatus
         };
-        // TODO Validate if rrdGraphAttributes contains rszAPNumSta
-        var id = encodeURIComponent(r.id.replace('%3A',':'));
-        $scope.fetchMetricAndUpdateRow(id, 'rszAPNumSta', row, 'numStations');
         $scope.rows.push(row);
+        $scope.fetchMetricAndUpdateRow(r, 'rszAPNumSta', row, 'numStations');
       }
     }
   }
@@ -340,10 +341,8 @@ angular.module('node-extensions', [
           case '2': row.status = 'Disassociating'; break;
           case '3': row.status = 'Downloading'; break;
         }
-        // TODO Validate if rrdGraphAttributes contains cLApAssocCount
-        var id = encodeURIComponent(r.id.replace('%3A',':'));
-        $scope.fetchMetricAndUpdateRow(id, 'cLApAssocCount', row, 'numStations');
         $scope.rows.push(row);
+        $scope.fetchMetricAndUpdateRow(r, 'cLApAssocCount', row, 'numStations');
       }
     }
   }
