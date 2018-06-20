@@ -112,17 +112,18 @@ angular.module('node-extensions', [
   $scope.title = 'Extension Panel';
 
   /**
-   * @description Request the value of a metric from a given resource to the Measurements API
+   * @description Requests the value of a metric from a given resource to the Measurements API and updates the chosen row.
+   * This is an asynchronous operation, as it requires to make an HTTP call.
    *
-   * @name NodeExtensionsCtrl:fetchMetricValue
+   * @name NodeExtensionsCtrl:fetchMetricAndUpdateRow
    * @ngdoc method
    * @methodOf NodeExtensionsCtrl
    * @param {string} id The OpenNMS Resource ID
    * @param {string} metric The name of the desired metric
-   * @returns {promise} A promise with the value of the metric when successfully resolved.
+   * @param {object} row The row to be updated on successful retrieval of the data
+   * @param {string} field The name of row field to update
    */
-  $scope.fetchMetricValue = function(id, metric) {
-    var deferred = $q.defer();
+  $scope.fetchMetricAndUpdateRow = function(id, metric, row, field) {
     console.debug('Getting value for metric ' + decodeURIComponent(id) + '.' + metric);
     $http.get('rest/measurements/' + id + '/' + metric + '?start=-900000')
       .success(function(info) {
@@ -130,19 +131,16 @@ angular.module('node-extensions', [
         for (var i=0; i<values.length; i++) {
           if (values[i] !== 'NaN') {
             console.debug('Got it: ' + values[i]);
-            deferred.resolve(Math.floor(values[i]));
+            row[field] = Math.floor(values[i]);
             break;
           }
         }
-      })
-      .error(function(err) {
-        deferred.reject();
       });
-    return deferred.promise;
   };
 
   /**
-   * @description Request the value of a metric from a given resource to the Measurements API
+   * @description Requests the value of a metric from a given resource to the Measurements API.
+   * This is an asynchronous operation, as it requires to make an HTTP call.
    *
    * @name NodeExtensionsCtrl:fetchResources
    * @ngdoc method
@@ -239,10 +237,7 @@ angular.module('node-extensions', [
         }
         // TODO Validate if rrdGraphAttributes contains rzdAPNumSta
         var id = encodeURIComponent(r.id.replace('%3A',':'));
-        $scope.fetchMetricValue(id, 'rzdAPNumSta').then(function(value) {
-          console.debug('Updating UI with value ' + value);
-          row.numStations = value;
-        });
+        $scope.fetchMetricAndUpdateRow(id, 'rzdAPNumSta', row, 'numStations');
         $scope.rows.push(row);
       }
     }
@@ -290,10 +285,7 @@ angular.module('node-extensions', [
         };
         // TODO Validate if rrdGraphAttributes contains rszAPNumSta
         var id = encodeURIComponent(r.id.replace('%3A',':'));
-        $scope.fetchMetricValue(id, 'rszAPNumSta').then(function(value) {
-          console.debug('Updating UI with value ' + value);
-          row.numStations = value;
-        });
+        $scope.fetchMetricAndUpdateRow(id, 'rszAPNumSta', row, 'numStations');
         $scope.rows.push(row);
       }
     }
@@ -350,10 +342,7 @@ angular.module('node-extensions', [
         }
         // TODO Validate if rrdGraphAttributes contains cLApAssocCount
         var id = encodeURIComponent(r.id.replace('%3A',':'));
-        $scope.fetchMetricValue(id, 'cLApAssocCount').then(function(value) {
-          console.debug('Updating UI with value ' + value);
-          row.numStations = value;
-        });
+        $scope.fetchMetricAndUpdateRow(id, 'cLApAssocCount', row, 'numStations');
         $scope.rows.push(row);
       }
     }

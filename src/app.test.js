@@ -11,10 +11,6 @@ require('./app');
 
 var createController, scope, httpBackend;
 
-const sleep = (ms) => {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 beforeEach(angular.mock.module('node-extensions', ($provide) => {
   $provide.value('$log', console);
 }));
@@ -138,7 +134,6 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus ZoneDirector', async() => 
 
   createController(1, '.1.3.6.1.4.1.25053.3.1.5.15');
   httpBackend.flush();
-  await sleep(1000);
 
   // Checking data
 
@@ -153,7 +148,7 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus ZoneDirector', async() => 
   expect(scope.rows.length).toEqual(2);
   expect(scope.rows[0].description).toEqual('AP 01');
   expect(scope.rows[0].ipAddress).toEqual('10.0.0.1');
-//  expect(scope.rows[0].numStations).toEqual(1); // FIXME Not working for some reason
+  expect(scope.rows[0].numStations).toEqual(1);
   expect(scope.rows[0].status).toEqual('Connected');
   console.debug('End validations.');
 });
@@ -256,7 +251,6 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus SmartZone', async() => {
 
   createController(1, '.1.3.6.1.4.1.25053.3.1.11.1');
   httpBackend.flush();
-  await sleep(1000);
 
   // Checking data
 
@@ -271,7 +265,7 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus SmartZone', async() => {
   expect(scope.rows.length).toEqual(2);
   expect(scope.rows[0].description).toEqual('AP 01');
   expect(scope.rows[0].ipAddress).toEqual('10.0.0.1');
-//  expect(scope.rows[0].numStations).toEqual(1); // FIXME Not working for some reason
+  expect(scope.rows[0].numStations).toEqual(1);
   expect(scope.rows[0].status).toEqual('Connect');
   console.debug('End validations.');
 });
@@ -375,7 +369,6 @@ test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
 
   createController(1, '.1.3.6.1.4.1.9.1.2370');
   httpBackend.flush();
-  await sleep(1000);
 
   // Checking data
 
@@ -390,7 +383,7 @@ test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
   expect(scope.rows.length).toEqual(2);
   expect(scope.rows[0].description).toEqual('AP 01');
   expect(scope.rows[0].ipAddress).toEqual('10.0.0.1');
-//  expect(scope.rows[0].numStations).toEqual(1); // FIXME Not working for some reason
+  expect(scope.rows[0].numStations).toEqual(1);
   expect(scope.rows[0].status).toEqual('Associated');
   console.debug('End validations.');
 });
