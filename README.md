@@ -36,10 +36,11 @@ Inside `app.js`, each plugin shows which data should be collected in order to us
 
 # Add new implementations
 
-Currently there are 2 implementations:
+Currently there are 3 implementations:
 
 * Ruckus SmartZone Controllers.
 * Ruckus ZoneDirector Controllers.
+* Cisco WLC
 
 Each implementation is a method of the Angular controller that receives the list of resources, and should populate the following local variables:
 
