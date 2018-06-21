@@ -33,7 +33,7 @@ The above is valid for Meridian 2016, Meridian 2017 and Horizon 21.x or older. F
 Find the place on which you want to load the extension and add the following piece of XML code:
 
 ```html=
-<div id="node-extensions" class="panel panel-default">
+<div id="node-extensions">
   <node-extensions node="${model.id}" oid="${model.node.sysObjectId}"/>
 </div>
 ```
