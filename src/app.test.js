@@ -6,7 +6,6 @@
 
 const angular = require('angular');
 require('angular-mocks');
-require('angular-ui-bootstrap');
 require('./app');
 
 var createController, scope, httpBackend;

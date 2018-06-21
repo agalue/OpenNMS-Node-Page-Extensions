@@ -24,7 +24,7 @@ The `node.jsp` file is located at the `$OPENNMS_HOME/jetty-webapps/opennms/inclu
 
 At the beginig of the file when all the JavaScript libraries are imported inside the `include` statement associated with the `bootstrap.jsp` declaration, add the following entry:
 
-```xml=
+```html=
 <jsp:param name="script" value='<script type="text/javascript" src="js/node-extensions/app.js"></script>' />
 ```
 
@@ -32,9 +32,9 @@ The above is valid for Meridian 2016, Meridian 2017 and Horizon 21.x or older. F
 
 Find the place on which you want to load the extension and add the following piece of XML code:
 
-```xml=
-<div id="node-extensions" class="panel panel-default"
-  <node-extensions node="${model.id}" oid="${model.node.sysObjectId}"/>
+```html=
+<div id="node-extensions" class="panel panel-default">
+  <node-extensions node="1" oid=".1.3.6.1.4.1.25053.3.1.11.1"/>
 </div>
 ```
 

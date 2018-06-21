@@ -4,9 +4,7 @@
 
 'use strict';
 
-angular.module('node-extensions', [
-  'ui.bootstrap'
-])
+angular.module('node-extensions', [])
 
 /**
  * @ngdoc directive
@@ -202,7 +200,7 @@ angular.module('node-extensions', [
       return $scope.pluginCiscoWlcData;
     }
     return undefined;
-  }
+  };
 
   /**
    * @description Plugin implementation for the Zone Director devices.
@@ -255,7 +253,7 @@ angular.module('node-extensions', [
         $scope.fetchMetricAndUpdateRow(r, 'rzdAPNumSta', row, 'numStations');
       }
     }
-  }
+  };
 
   /**
    * @description Plugin implementation for the Ruckus Smart Zone devices.
@@ -301,7 +299,7 @@ angular.module('node-extensions', [
         $scope.fetchMetricAndUpdateRow(r, 'rszAPNumSta', row, 'numStations');
       }
     }
-  }
+  };
 
   /**
    * @description Plugin implementation for the Cisco WLC devices.
@@ -356,7 +354,7 @@ angular.module('node-extensions', [
         $scope.fetchMetricAndUpdateRow(r, 'cLApAssocCount', row, 'numStations');
       }
     }
-  }
+  };
 
   /**
    * The following code is executed as soon as the controller is loaded.
