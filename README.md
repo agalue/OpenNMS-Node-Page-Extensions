@@ -34,7 +34,7 @@ Find the place on which you want to load the extension and add the following pie
 
 ```html=
 <div id="node-extensions" class="panel panel-default">
-  <node-extensions node="1" oid=".1.3.6.1.4.1.25053.3.1.11.1"/>
+  <node-extensions node="${model.id}" oid="${model.node.sysObjectId}"/>
 </div>
 ```
 
