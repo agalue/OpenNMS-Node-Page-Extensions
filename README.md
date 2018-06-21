@@ -24,7 +24,7 @@ The `node.jsp` file is located at the `$OPENNMS_HOME/jetty-webapps/opennms/inclu
 
 At the beginig of the file when all the JavaScript libraries are imported inside the `include` statement associated with the `bootstrap.jsp` declaration, add the following entry:
 
-```html=
+```html
 <jsp:param name="script" value='<script type="text/javascript" src="js/node-extensions/app.js"></script>' />
 ```
 
@@ -32,11 +32,17 @@ The above is valid for Meridian 2016, Meridian 2017 and Horizon 21.x or older. F
 
 Find the place on which you want to load the extension and add the following piece of XML code:
 
-```html=
+```html
 <div id="node-extensions">
   <node-extensions nodeId="${model.id}" sysObjectId="${model.node.sysObjectId}"/>
 </div>
 ```
+
+The outer div is the container where the Angular application will be bootstrapped. The ID has to be `node-extensions`, in order to render the tag with the same name inside of it.
+
+Note that the custom tag (ie. an Angular directive), expects to receive 2 parameters: the ID of the node, and the system Object ID. On the `node.jsp`, these two values are available as shown on the above HTML section.
+
+This custom tag renders a table widget with the data only when there is a plugin implementation; otherwise it does nothing.
 
 ## Update the corresponding data collection settings
 
@@ -58,9 +64,35 @@ Each implementation is a method of the Angular controller that receives the list
 
 Each resource object contains the string attributes defined on the respective data collection configuration, and offers an async method to retrieve a single value of a given metric for the chosen resource using the Measurements API.
 
+Once the plugin implementation exist, it should be registered inside `$scope.getPluginImplementation` using on some criteria based on the `sysObjectId`.
+
+## Implementation Example
+
+Let's say the users would like to see a panel on the node page that shows the amount of collected metrics per resource-type. The first thing to do is add the plugin implementation:
+
+```javascript
+$scope.pluginResourceCount = function(resources) {
+  $scope.title = 'Resource Statistics';
+  $scope.columns = [
+    { name: 'type',  label: 'Resource Type' },
+    { name: 'count', label: '# of Metrics' }
+  ];
+  var stats = {};
+  for (var r of resources) {
+    if (stats[r.typeLabel] === undefined) stats[r.typeLabel] = 0;
+    stats[r.typeLabel] += Object.keys(r.rrdGraphAttributes).length;
+  }
+  for (var k in stats) {
+    $scope.rows.push({ type: k, count: stats[k] });
+  }
+};
+```
+
+Then, the next step is register the above plugin inside `getPluginImplementation`, to make sure it will be rendered when needed.
+
 # Execute local tests
 
-```SHELL
+```shell
 npm install
 npm test
 ```

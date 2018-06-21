@@ -129,20 +129,20 @@ angular.module('node-extensions', [])
    * @methodOf NodeExtensionsCtrl
    * @param {object} resource The OpenNMS Resource object
    * @param {string} metric The name of the desired metric
-   * @param {object} row The row to be updated on successful retrieval of the data
-   * @param {string} field The name of row field to update
+   * @param {object} rowObj The row object to be updated on successful retrieval of the data
+   * @param {string} rowField The name of row field to update
    */
-  $scope.fetchMetricAndUpdateRow = function(resource, metric, row, field) {
+  $scope.fetchMetricAndUpdateRow = function(resource, metric, rowObj, rowField) {
     console.debug('Getting value for metric ' + resource.id + '.' + metric);
     if (resource.rrdGraphAttributes[metric]) {
-      var id = encodeURIComponent(resource.id.replace('%3A',':'));
-      $http.get('rest/measurements/' + id + '/' + metric + '?start=-900000')
+      var resourceId = encodeURIComponent(resource.id.replace('%3A',':'));
+      $http.get('rest/measurements/' + resourceId + '/' + metric + '?start=-900000')
       .success(function(info) {
         var values = info.columns[0].values.reverse();
         for (var i=0; i<values.length; i++) {
           if (values[i] !== 'NaN') {
             console.debug('Got it: ' + values[i]);
-            row[field] = Math.floor(values[i]);
+            rowObj[rowField] = Math.ceil(values[i]); // Use the upward nearest integer.
             break;
           }
         }
@@ -159,12 +159,12 @@ angular.module('node-extensions', [])
    * @name NodeExtensionsCtrl:fetchResources
    * @ngdoc method
    * @methodOf NodeExtensionsCtrl
-   * @param {string} id The OpenNMS Resource ID
+   * @param {string} resourceId The OpenNMS Resource ID
    * @returns {promise} A promise with an array of OpenNMS resource objects when successfully resolved.
    */ 
-  $scope.fetchResources = function(id) {
+  $scope.fetchResources = function(resourceId) {
     var deferred = $q.defer();
-    $http.get('rest/resources/fornode/' + id)
+    $http.get('rest/resources/fornode/' + resourceId)
       .success(function(data) {
         deferred.resolve(data.children.resource);
       })
@@ -239,8 +239,8 @@ angular.module('node-extensions', [])
         var row = {
           description: r.stringPropertyAttributes.rzdAPDescripion,
           ipAddress: r.stringPropertyAttributes.rzdAPIPAddress,
-          numStations: '...',
-          status: 'Unknown'
+          numStations: '...', // Will be replaced by fetchMetricAndUpdateRow asynchronously
+          status: 'Unknown' // Default value
         };
         switch (r.stringPropertyAttributes.rzdAPStatus) {
           case '0': row.status = 'Disconnected'; break;
@@ -292,7 +292,7 @@ angular.module('node-extensions', [])
         var row = {
           description: r.stringPropertyAttributes.rszAPName,
           ipAddress: r.stringPropertyAttributes.rszAPIp,
-          numStations: '...',
+          numStations: '...', // Will be replaced by fetchMetricAndUpdateRow asynchronously
           status: r.stringPropertyAttributes.rszAPConnStatus
         };
         $scope.rows.push(row);
@@ -342,8 +342,8 @@ angular.module('node-extensions', [])
         var row = {
           description: r.stringPropertyAttributes.bsnAPName,
           ipAddress: r.stringPropertyAttributes.bsnApIpAddress,
-          numStations: '...',
-          status: 'Unknown'
+          numStations: '...', // Will be replaced by fetchMetricAndUpdateRow asynchronously
+          status: 'Unknown' // Default value
         };
         switch (r.stringPropertyAttributes.bsnAPOperStatus) {
           case '1': row.status = 'Associated'; break;
