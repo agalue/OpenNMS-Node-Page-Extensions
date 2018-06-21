@@ -1,26 +1,28 @@
-<div class="panel-heading">
-  <h3 class="panel-title">{{ title }}</h3>
-</div>
-<div class="table-responsive" ng-show="!loading && data.length > 0">
-  <table class="table table-condensed">
-    <thead>
-      <tr>
-        <th ng-repeat="col in columns">
-        <th>{{ col.label }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="row in rows">
-        <td ng-repeat="col in columns">
-          {{ row[col.name] }}
-        </td>
-      </tr>
-   </tbody>
-  </table>
-</div>
-<div class="panel-body" ng-show="loading && data.length == 0">
-  <p>Loading data, please wait ...</p>
-</div>
-<div class="panel-body" ng-show="!loading && data.length == 0">
-  <p>No extensions found for this node ...</p>
+<div ng-if="pluginFound">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ title }}</h3>
+  </div>
+  <div class="table-responsive" ng-if="!loading && rows.length > 0">
+    <table class="table table-condensed">
+      <thead>
+        <tr>
+          <th ng-repeat="col in columns">
+          <th>{{ col.label }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="row in rows">
+          <td ng-repeat="col in columns">
+            {{ row[col.name] }}
+          </td>
+        </tr>
+     </tbody>
+    </table>
+  </div>
+  <div class="panel-body" ng-if="loading && rows.length == 0">
+    <p>Loading data, please wait ...</p>
+  </div>
+  <div class="panel-body" ng-if="!loading && rows.length == 0">
+    <p>There is no data for this node, plese check the configuration ...</p>
+  </div>
 </div>

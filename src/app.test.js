@@ -32,10 +32,13 @@ afterEach(() => {
   httpBackend.verifyNoOutstandingRequest();
 });
 
+
 test('Controller: NodeExtensionsCtrl: nothing happen on invalid OIDs', () => {
   createController(1, '.1.3.6.1.4.1.1000.1.1');
   expect(scope.loading).toEqual(false);
+  expect(scope.pluginFound).toEqual(false);
 });
+
 
 test('Controller: NodeExtensionsCtrl: checking Ruckus ZoneDirector', async() => {
   // Calls for Number of Connection
@@ -115,9 +118,9 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus ZoneDirector', async() => 
         typeLabel: 'Ruckus ZD AP',
         parentId: 'node[Test%3ANode].nodeSnmp[]',
         stringPropertyAttributes: {
-          rzdAPIPAddress: '10.0.0.1',
-          rzdAPDescripion: 'AP 01',
-          rzdAPStatus: '2'
+          rzdAPIPAddress: '10.0.0.2',
+          rzdAPDescripion: 'AP 02',
+          rzdAPStatus: '0'
         },
         rrdGraphAttributes: {
           rzdAPNumSta: {
@@ -139,6 +142,7 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus ZoneDirector', async() => 
 
   console.debug('Start valitations...');
   expect(scope.loading).toEqual(false);
+  expect(scope.pluginFound).toEqual(true);
   expect(scope.title).toEqual('Ruckus ZoneDirector Access Points');
   expect(scope.columns.length).toEqual(4);
   expect(scope.columns[0].name).toEqual('description');
@@ -146,10 +150,8 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus ZoneDirector', async() => 
   expect(scope.columns[2].name).toEqual('numStations');
   expect(scope.columns[3].name).toEqual('status');
   expect(scope.rows.length).toEqual(2);
-  expect(scope.rows[0].description).toEqual('AP 01');
-  expect(scope.rows[0].ipAddress).toEqual('10.0.0.1');
-  expect(scope.rows[0].numStations).toEqual(1);
-  expect(scope.rows[0].status).toEqual('Connected');
+  expect(scope.rows[0]).toEqual({description: 'AP 01', ipAddress: '10.0.0.1', numStations: 1, status: 'Connected'});
+  expect(scope.rows[1]).toEqual({description: 'AP 02', ipAddress: '10.0.0.2', numStations: 0, status: 'Disconnected'});
   console.debug('End validations.');
 });
 
@@ -256,6 +258,7 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus SmartZone', async() => {
 
   console.debug('Start valitations...');
   expect(scope.loading).toEqual(false);
+  expect(scope.pluginFound).toEqual(true);
   expect(scope.title).toEqual('Ruckus SmartZone Access Points');
   expect(scope.columns.length).toEqual(4);
   expect(scope.columns[0].name).toEqual('description');
@@ -263,12 +266,11 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus SmartZone', async() => {
   expect(scope.columns[2].name).toEqual('numStations');
   expect(scope.columns[3].name).toEqual('status');
   expect(scope.rows.length).toEqual(2);
-  expect(scope.rows[0].description).toEqual('AP 01');
-  expect(scope.rows[0].ipAddress).toEqual('10.0.0.1');
-  expect(scope.rows[0].numStations).toEqual(1);
-  expect(scope.rows[0].status).toEqual('Connect');
+  expect(scope.rows[0]).toEqual({description: 'AP 01', ipAddress: '10.0.0.1', numStations: 1, status: 'Connect'});
+  expect(scope.rows[1]).toEqual({description: 'AP 02', ipAddress: '10.0.0.2', numStations: 0, status: 'Disconnect'});
   console.debug('End validations.');
 });
+
 
 test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
   // Calls for Number of Connection
@@ -374,6 +376,7 @@ test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
 
   console.debug('Start valitations...');
   expect(scope.loading).toEqual(false);
+  expect(scope.pluginFound).toEqual(true);
   expect(scope.title).toEqual('Cisco WLC Access Points');
   expect(scope.columns.length).toEqual(4);
   expect(scope.columns[0].name).toEqual('description');
@@ -381,9 +384,7 @@ test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
   expect(scope.columns[2].name).toEqual('numStations');
   expect(scope.columns[3].name).toEqual('status');
   expect(scope.rows.length).toEqual(2);
-  expect(scope.rows[0].description).toEqual('AP 01');
-  expect(scope.rows[0].ipAddress).toEqual('10.0.0.1');
-  expect(scope.rows[0].numStations).toEqual(1);
-  expect(scope.rows[0].status).toEqual('Associated');
+  expect(scope.rows[0]).toEqual({description: 'AP 01', ipAddress: '10.0.0.1', numStations: 1, status: 'Associated'});
+  expect(scope.rows[1]).toEqual({description: 'AP 02', ipAddress: '10.0.0.2', numStations: 0, status: 'Disassociating'});
   console.debug('End validations.');
 });

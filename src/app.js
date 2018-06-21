@@ -100,6 +100,17 @@ angular.module('node-extensions', [
    */
   $scope.loading = true;
 
+    /**
+   * @description The plugin found flag
+   * Used to let the template know that the panel should be rendered.
+   *
+   * @ngdoc property
+   * @name NodeExtensionsCtrl#pluginFound
+   * @propertyOf NodeExtensionsCtrl
+   * @returns {boolean} The plugin found flag (default: false)
+   */
+  $scope.pluginFound = false;
+
   /**
    * @description The title
    * The title of the extension panel.
@@ -218,15 +229,15 @@ angular.module('node-extensions', [
    * @param {array} resources The list of OpenNMS Resources from the Resources ReST API
    */
   $scope.pluginRuckusZoneDirectorData = function(resources) {
+    $scope.title = 'Ruckus ZoneDirector Access Points';
+    $scope.columns = [
+      { name: 'description', label: 'Description' },
+      { name: 'ipAddress',   label: 'IP Address' },
+      { name: 'numStations', label: '# Stations' },
+      { name: 'status',      label: 'Status' }
+    ];
     for (var r of resources) {
       if (r.id.match(/ruckusZDWLANAPEntry/)) {
-        $scope.title = 'Ruckus ZoneDirector Access Points';
-        $scope.columns = [
-          { name: 'description', label: 'Description' },
-          { name: 'ipAddress',   label: 'IP Address' },
-          { name: 'numStations', label: '# Stations' },
-          { name: 'status',      label: 'Status' }
-        ];
         var row = {
           description: r.stringPropertyAttributes.rzdAPDescripion,
           ipAddress: r.stringPropertyAttributes.rzdAPIPAddress,
@@ -271,15 +282,15 @@ angular.module('node-extensions', [
    * @param {array} resources The list of OpenNMS Resources from the Resources ReST API
    */
   $scope.pluginRuckusSmartZoneData = function(resources) {
+    $scope.title = 'Ruckus SmartZone Access Points';
+    $scope.columns = [
+      { name: 'description', label: 'Description' },
+      { name: 'ipAddress',   label: 'IP Address' },
+      { name: 'numStations', label: '# Stations' },
+      { name: 'status',      label: 'Status' }
+    ];
     for (var r of resources) {
       if (r.id.match(/ruckusSZAPEntry/)) {
-        $scope.title = 'Ruckus SmartZone Access Points';
-        $scope.columns = [
-          { name: 'description', label: 'Description' },
-          { name: 'ipAddress',   label: 'IP Address' },
-          { name: 'numStations', label: '# Stations' },
-          { name: 'status',      label: 'Status' }
-        ];
         var row = {
           description: r.stringPropertyAttributes.rszAPName,
           ipAddress: r.stringPropertyAttributes.rszAPIp,
@@ -321,15 +332,15 @@ angular.module('node-extensions', [
    * @param {array} resources The list of OpenNMS Resources from the Resources ReST API
    */
   $scope.pluginCiscoWlcData = function(resources) {
+    $scope.title = 'Cisco WLC Access Points';
+    $scope.columns = [
+      { name: 'description', label: 'Description' },
+      { name: 'ipAddress',   label: 'IP Address' },
+      { name: 'numStations', label: '# Stations' },
+      { name: 'status',      label: 'Status' }
+    ];
     for (var r of resources) {
       if (r.id.match(/ciscoAPMacAddress/)) {
-        $scope.title = 'Cisco WLC Access Points';
-        $scope.columns = [
-          { name: 'description', label: 'Description' },
-          { name: 'ipAddress',   label: 'IP Address' },
-          { name: 'numStations', label: '# Stations' },
-          { name: 'status',      label: 'Status' }
-        ];
         var row = {
           description: r.stringPropertyAttributes.bsnAPName,
           ipAddress: r.stringPropertyAttributes.bsnApIpAddress,
@@ -364,6 +375,7 @@ angular.module('node-extensions', [
     $scope.fetchResources($scope.nodeId).then(function(resources) {
       plugin(resources);
       $scope.loading = false;
+      $scope.pluginFound = true;
     });
   } else {
     console.debug('No plugins were found...');
