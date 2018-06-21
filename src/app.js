@@ -20,8 +20,8 @@ angular.module('node-extensions', [])
   return {
     restrict: 'E',
     scope: {
-      nodeId: '@id',
-      sysObjectId: '@oid'
+      nodeId: '@nodeid',
+      sysObjectId: '@sysobjectid'
     },
     templateUrl: 'js/node-extensions/template.html',
     controller: 'NodeExtensionsCtrl'

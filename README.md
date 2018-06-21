@@ -34,7 +34,7 @@ Find the place on which you want to load the extension and add the following pie
 
 ```html=
 <div id="node-extensions">
-  <node-extensions node="${model.id}" oid="${model.node.sysObjectId}"/>
+  <node-extensions nodeId="${model.id}" sysObjectId="${model.node.sysObjectId}"/>
 </div>
 ```
 
