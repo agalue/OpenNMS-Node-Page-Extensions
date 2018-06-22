@@ -17,18 +17,6 @@
         "angular": "1.5.11",
         "bootstrap": "^3.3.7"
     },
-    "jest": {
-        "moduleFileExtensions": [
-            "js"
-        ],
-        "moduleDirectories": [
-            "./src",
-            "./node_modules"
-        ],
-        "testPathIgnorePatterns": [
-            "<rootDir>/node_modules/"
-        ]
-    },
     "scripts": {
         "test": "jest"
     }
