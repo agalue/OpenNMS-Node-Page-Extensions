@@ -1,0 +1,118 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Ruckus">
+
+  <resourceType name="ruckusZDWLANEntry" label="Ruckus ZoneDirector WLAN" resourceLabel="${rzdSSID}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="ruckusZDWLANAPEntry" label="Ruckus ZoneDirector WLAN AP" resourceLabel="${rzdAPDescripion}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="ruckusSZWLANEntry" label="Ruckus SmartZone WLAN" resourceLabel="${rszSSID}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="ruckusSZAPEntry" label="Ruckus SmartZone AP" resourceLabel="${rszAPName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <!-- From RUCKUS-ZD-WLAN-MIB; -->
+
+  <!-- ZoneDirector Chassis -->
+  <group name="ruckusZDsystem" ifType="ignore">
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.1.1.1.5.92" instance="0" alias="ruckusZDSysCPU" type="integer" />
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.1.1.1.5.95" instance="0" alias="ruckusZDSysMemory" type="integer" />
+  </group>
+
+  <!-- ZoneDirector Statistics -->
+  <group name="ruckusZDWLANTable" ifType="all">
+    <!-- Info -->
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.1" instance="ruckusZDWLANEntry" alias="rzdSSID" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.108" instance="ruckusZDWLANEntry" alias="rzdName" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.2" instance="ruckusZDWLANEntry" alias="rzdDescription" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.7" instance="ruckusZDWLANEntry" alias="rzdVlanID" type="string"/>
+    <!-- Data -->
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.11" instance="ruckusZDWLANEntry" alias="rzdNumVAP" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.12" instance="ruckusZDWLANEntry" alias="rzdNumSta" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.13" instance="ruckusZDWLANEntry" alias="rzdRxPkts" type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.14" instance="ruckusZDWLANEntry" alias="rzdRxBytes" type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.15" instance="ruckusZDWLANEntry" alias="rzdTxPkts" type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.1.1.1.16" instance="ruckusZDWLANEntry" alias="rzdTxBytes" type="counter64"/>
+  </group>
+
+  <!-- ZoneDirector AccessPoint Statistics -->
+  <group name="ruckusZDWLANAPTable" ifType="all">
+    <!-- Info -->
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.2" instance="ruckusZDWLANAPEntry" alias="rzdAPDescripion" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.3" instance="ruckusZDWLANAPEntry" alias="rzdAPStatus" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.10" instance="ruckusZDWLANAPEntry" alias="rzdAPIPAddress" type="string"/>
+    <!-- Data -->
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.6" instance="ruckusZDWLANAPEntry" alias="rzdAPUptime" type="timeticks"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.15" instance="ruckusZDWLANAPEntry" alias="rzdAPNumSta" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.21" instance="ruckusZDWLANAPEntry" alias="rzdAPLANRXBytes" type="counter32"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.25" instance="ruckusZDWLANAPEntry" alias="rzdAPLANTXBytes" type="counter32"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.27" instance="ruckusZDWLANAPEntry" alias="rzdAPMemUtil" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.28" instance="ruckusZDWLANAPEntry" alias="rzdAPMemTotal" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.29" instance="ruckusZDWLANAPEntry" alias="rzdAPCPUUtil" type="integer"/>
+  </group>
+
+  <!-- From RUCKUS-SZ-WLAN-MIB -->
+
+  <!-- SmartZone Chassis -->
+  <group name="ruckusSZCpu" ifType="ignore">
+    <mibObj oid=".1.3.6.1.4.1.2021.11.9" instance="0" alias="ssCpuUser" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.2021.11.10" instance="0" alias="ssCpuSystem" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.2021.11.11" instance="0" alias="ssCpuIdle" type="integer"/>
+  </group>
+
+  <!-- SmartZone Statistics -->
+  <group name="ruckusSZWLANTable" ifType="all">
+    <!-- Info -->
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.1.2.1.1" instance="ruckusSZWLANEntry" alias="rszSSID" type="string"/>
+    <!-- Data -->
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.1.2.1.12" instance="ruckusSZWLANEntry" alias="rszNumSta" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.1.2.1.14" instance="ruckusSZWLANEntry" alias="rszRxBytes" type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.1.2.1.16" instance="ruckusSZWLANEntry" alias="rszTxBytes" type="counter64"/>
+  </group>
+
+  <!-- SmartZone Access Points Statistics -->
+  <group name="ruckusSZAPTable" ifType="all">
+    <!-- Info -->
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.5" instance="ruckusSZAPEntry" alias="rszAPName" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.6" instance="ruckusSZAPEntry" alias="rszAPUptime" type="timeticks"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.10" instance="ruckusSZAPEntry" alias="rszAPIp" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.12" instance="ruckusSZAPEntry" alias="rszAPExtIp" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.15" instance="ruckusSZAPEntry" alias="rszAPNumSta" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.16" instance="ruckusSZAPEntry" alias="rszAPConnStatus" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.17" instance="ruckusSZAPEntry" alias="rszAPRegStatus" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.22" instance="ruckusSZAPEntry" alias="rszAPDescription" type="string"/>
+    <!-- Data -->
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.30" instance="ruckusSZAPEntry" alias="rszAPRXBytes" type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.31" instance="ruckusSZAPEntry" alias="rszAPTXBytes" type="counter64"/>
+  </group>
+
+  <!-- System Definitions -->
+
+  <systemDef name="Ruckus ZoneDirector">
+    <sysoidMask>.1.3.6.1.4.1.25053.3.1.5.</sysoidMask>
+    <collect>
+      <includeGroup>ruckusZDsystem</includeGroup>
+      <includeGroup>ruckusZDWLANTable</includeGroup>
+      <includeGroup>ruckusZDWLANAPTable</includeGroup>
+    </collect>
+  </systemDef>
+
+  <systemDef name="Ruckus SmartZone">
+    <sysoidMask>.1.3.6.1.4.1.25053.3.1.11.</sysoidMask>
+    <collect>
+      <includeGroup>ruckusSZCpu</includeGroup>
+      <includeGroup>ruckusSZWLANTable</includeGroup>
+      <includeGroup>ruckusSZAPTable</includeGroup>
+    </collect>
+  </systemDef>
+
+</datacollection-group>

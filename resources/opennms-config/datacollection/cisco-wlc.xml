@@ -1,0 +1,39 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Cisco WLC">
+
+  <resourceType name="ciscoAPMacAddress" label="Cisco WLC AP" resourceLabel="${cLApName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <!-- From CISCO-LWAPP-AP-MIB. cLApTable is indexed by cLApSysMacAddress which has a type of MacAddress -->
+  <group name="cLApTable" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.1.1.1.5"  instance="ciscoAPMacAddress" alias="cLApName"       type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.1.1.1.51" instance="ciscoAPMacAddress" alias="cLApAssocCount" type="integer"/>
+  </group>
+
+  <!-- From AIRESPACE-WIRELESS-MIB. bsnAPTable is indexed by bsnAPDot3MacAddress which has a type of MacAddress -->
+  <group name="bsnAPTable" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.3"  instance="ciscoAPMacAddress" alias="bsnAPName"       type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.6"  instance="ciscoAPMacAddress" alias="bsnAPOperStatus" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.19" instance="ciscoAPMacAddress" alias="bsnApIpAddress"  type="string"/>
+  </group>
+
+  <!-- System Definitions -->
+
+  <systemDef name="Cisco Controller - ME2802">
+    <sysoid>.1.3.6.1.4.1..9.1.2370</sysoid>
+    <collect>
+      <includeGroup>cLApTable</includeGroup>
+      <includeGroup>bsnAPTable</includeGroup>
+    </collect>
+  </systemDef>
+
+  <systemDef name="Cisco Controller - WLC5520">
+    <sysoid>.1.3.6.1.4.1..9.1.2170</sysoid>
+    <collect>
+      <includeGroup>cLApTable</includeGroup>
+      <includeGroup>bsnAPTable</includeGroup>
+    </collect>
+  </systemDef>
+
+</datacollection-group>

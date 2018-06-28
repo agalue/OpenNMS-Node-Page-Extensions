@@ -22,6 +22,8 @@ The above is valid for Meridian 2016, Meridian 2017 and Horizon 21.x or older. F
 
 The `node.jsp` file is located at the `$OPENNMS_HOME/jetty-webapps/opennms/includes/` directory.
 
+Please make a backup of the file to be able to restore its original state, in case something wrong happens.
+
 At the beginig of the file when all the JavaScript libraries are imported inside the `include` statement associated with the `bootstrap.jsp` declaration, add the following entry:
 
 ```html
@@ -47,6 +49,8 @@ This custom tag renders a table widget with the data only when there is a plugin
 ## Update the corresponding data collection settings
 
 Inside `sc/app.js`, each plugin shows which data should be collected in order to use the plugin. OpenNMS must be collecting the data in order to render the panel; otherwise nothing will be displayed on the node page.
+
+To simplify the implementation process, the `resources` directory contains a suggested configuration not only to cover the needs of this application, but also to collect some basic statistics from the involved devices.
 
 # Add new implementations
 
