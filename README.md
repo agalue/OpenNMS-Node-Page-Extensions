@@ -10,7 +10,20 @@ Another use case could be, show the VMs status with average CPU and Memory conne
 
 # Installation
 
-## Install the Angular App
+## Automatic procedure
+
+From the OpenNMS machine:
+
+```shell
+sudo yum install -y -q git
+git clone https://github.com/agalue/OpenNMS-Node-Page-Extensions.git
+cd OpenNMS-Node-Page-Extensions
+sudo sh install.sh
+```
+
+## Manual procedure
+
+### Install the Angular App
 
 * Create a directory called `$OPENNMS_HOME/jetty-webapps/opennms/js/node-extensions` at the OpenNMS server.
 
@@ -18,7 +31,7 @@ Another use case could be, show the VMs status with average CPU and Memory conne
 
 The above is valid for Meridian 2016, Meridian 2017 and Horizon 21.x or older. For Horizon 22 (and the upcoming Meridian 2018), the `js` directory doesn't exist, but it can be manually created, as the JavaScript applications are distributted differently in this version.
 
-## Edit node.jsp
+### Edit node.jsp
 
 The `node.jsp` file is located at the `$OPENNMS_HOME/jetty-webapps/opennms/includes/` directory.
 
@@ -46,7 +59,7 @@ Note that the custom tag (ie. an Angular directive), expects to receive 2 parame
 
 This custom tag renders a table widget with the data only when there is a plugin implementation; otherwise it does nothing.
 
-## Update the corresponding data collection settings
+### Update the corresponding data collection settings
 
 Inside `sc/app.js`, each plugin shows which data should be collected in order to use the plugin. OpenNMS must be collecting the data in order to render the panel; otherwise nothing will be displayed on the node page.
 
