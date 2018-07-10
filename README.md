@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/agalue/OpenNMS-Node-Page-Extensions.svg?style=svg)](https://circleci.com/gh/agalue/OpenNMS-Node-Page-Extensions)
+
 # Node Page Extensions
 
 The idea is to be able to show custom tabular data based on collected performance metrics from certain devices into the node page.
@@ -108,6 +110,8 @@ $scope.pluginResourceCount = function(resources) {
 Then, the next step is register the above plugin inside `getPluginImplementation`, to make sure it will be rendered when needed.
 
 # Execute local tests
+
+[CircleCI](https://circleci.com/gh/agalue/OpenNMS-Node-Page-Extensions) is testing this repository, but here is how to do it on your own:
 
 ```shell
 npm install
