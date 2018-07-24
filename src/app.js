@@ -314,8 +314,8 @@ angular.module('node-extensions', [])
    * 
    * <!-- From CISCO-LWAPP-AP-MIB. cLApTable is indexed by cLApSysMacAddress which has a type of MacAddress -->
    * <group name="cLApTable" ifType="all">
-   *    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.1.1.1.5"  instance="ciscoAPMacAddress" alias="cLApName"       type="string"/>
-   *    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.1.1.1.51" instance="ciscoAPMacAddress" alias="cLApAssocCount" type="integer"/>
+   *    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.1.1.1.5"  instance="ciscoAPMacAddress" alias="cLApName"          type="string"/>
+   *    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.1.1.1.54" instance="ciscoAPMacAddress" alias="cLApAssocCliCount" type="integer"/>
    * </group>
    * <!-- From AIRESPACE-WIRELESS-MIB. bsnAPTable is indexed by bsnAPDot3MacAddress which has a type of MacAddress -->
    * <group name="bsnAPTable" ifType="all">
@@ -351,7 +351,7 @@ angular.module('node-extensions', [])
           case '3': row.status = 'Downloading'; break;
         }
         $scope.rows.push(row);
-        $scope.fetchMetricAndUpdateRow(r, 'cLApAssocCount', row, 'numStations');
+        $scope.fetchMetricAndUpdateRow(r, 'cLApAssocCliCount', row, 'numStations');
       }
     }
   };

@@ -274,43 +274,43 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus SmartZone', async() => {
 test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
   // Calls for Number of Connection
 
-  httpBackend.whenGET('rest/measurements/node%5BTest%3ANode%5D.ciscoAPMacAddress%5B6.0.0.0.0.0.1%5D/cLApAssocCount?start=-900000').respond({
+  httpBackend.whenGET('rest/measurements/node%5BTest%3ANode%5D.ciscoAPMacAddress%5B6.0.0.0.0.0.1%5D/cLApAssocCliCount?start=-900000').respond({
     step: 300000,
     start: 1529512122003,
     end: 1529513022003,
     timestamps: [1529511900000, 1529512200000, 1529512500000, 1529512800000, 1529513100000],
-    labels: ['cLApAssocCount'],
+    labels: ['cLApAssocCliCount'],
     columns: [{
       values: ['NaN', 2.0, 1.0, 1.0, 1.0]
     }],
     constants: [{
-      key: 'cLApAssocCount.bsnAPOperStatus',
+      key: 'cLApAssocCliCount.bsnAPOperStatus',
       value: 'Connect'
     }, {
-      key: 'cLApAssocCount.bsnApIpAddress',
+      key: 'cLApAssocCliCount.bsnApIpAddress',
       value: '10.0.0.1'
     }, {
-      key: 'cLApAssocCount.bsnAPName',
+      key: 'cLApAssocCliCount.bsnAPName',
       value: 'AP 01'
     }]
   });
-  httpBackend.whenGET('rest/measurements/node%5BTest%3ANode%5D.ciscoAPMacAddress%5B6.0.0.0.0.0.2%5D/cLApAssocCount?start=-900000').respond({
+  httpBackend.whenGET('rest/measurements/node%5BTest%3ANode%5D.ciscoAPMacAddress%5B6.0.0.0.0.0.2%5D/cLApAssocCliCount?start=-900000').respond({
     step: 300000,
     start: 1529512122003,
     end: 1529513022003,
     timestamps: [1529511900000, 1529512200000, 1529512500000, 1529512800000, 1529513100000],
-    labels: ['cLApAssocCount'],
+    labels: ['cLApAssocCliCount'],
     columns: [{
       values: [0.0, 0.0, 0.0, 0.0, 0.0]
     }],
     constants: [{
-      key: 'cLApAssocCount.bsnAPOperStatus',
+      key: 'cLApAssocCliCount.bsnAPOperStatus',
       value: 'Disconnect'
     }, {
-      key: 'cLApAssocCount.bsnApIpAddress',
+      key: 'cLApAssocCliCount.bsnApIpAddress',
       value: '10.0.0.2'
     }, {
-      key: 'cLApAssocCount.bsnAPName',
+      key: 'cLApAssocCliCount.bsnAPName',
       value: 'AP 02'
     }]
   });
@@ -338,8 +338,8 @@ test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
           cLApName: 'AP 01',
         },
         rrdGraphAttributes: {
-          cLApAssocCount: {
-            name: 'cLApAssocCount',
+          cLApAssocCliCount: {
+            name: 'cLApAssocCliCount',
             relativePath: '',
             rrdFile: 'snmp:fs:Test:Node:ciscoAPMacAddress:6.0.0.0.0.0.1:cLApTable'
           }
@@ -356,8 +356,8 @@ test('Controller: NodeExtensionsCtrl: checking Cisco WLC', async() => {
           cLApName: 'AP 02',
         },
         rrdGraphAttributes: {
-          cLApAssocCount: {
-            name: 'cLApAssocCount',
+          cLApAssocCliCount: {
+            name: 'cLApAssocCliCount',
             relativePath: '',
             rrdFile: 'snmp:fs:Test:Node:ciscoAPMacAddress:6.0.0.0.0.0.2:cLApTable'
           }
