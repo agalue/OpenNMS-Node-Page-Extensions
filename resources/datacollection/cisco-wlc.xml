@@ -45,7 +45,7 @@
 
   <!-- System Definitions -->
 
-  <systemDef name="Cisco Controller - ME2802">
+  <systemDef name="Cisco Controller - ME2802 A">
     <sysoid>.1.3.6.1.4.1.9.1.2370</sysoid>
     <collect>
       <includeGroup>cLApTable</includeGroup>
@@ -54,8 +54,26 @@
     </collect>
   </systemDef>
 
-  <systemDef name="Cisco Controller - WLC5520">
+  <systemDef name="Cisco Controller - ME2802 B">
+    <sysoid>.1.3.6.1.4.1.9.1.2371</sysoid>
+    <collect>
+      <includeGroup>cLApTable</includeGroup>
+      <includeGroup>bsnAPTable</includeGroup>
+      <includeGroup>cLApWlanStatsTable</includeGroup>
+    </collect>
+  </systemDef>
+
+  <systemDef name="Cisco Controller - cisco5520WLC">
     <sysoid>.1.3.6.1.4.1.9.1.2170</sysoid>
+    <collect>
+      <includeGroup>cLApTable</includeGroup>
+      <includeGroup>bsnAPTable</includeGroup>
+      <includeGroup>cLApWlanStatsTable</includeGroup>
+    </collect>
+  </systemDef>
+
+  <systemDef name="Cisco Controller - ciscoAirCt2504K9">
+    <sysoid>.1.3.6.1.4.1.9.1.1279</sysoid>
     <collect>
       <includeGroup>cLApTable</includeGroup>
       <includeGroup>bsnAPTable</includeGroup>
