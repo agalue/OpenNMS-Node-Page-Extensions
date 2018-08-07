@@ -22,18 +22,18 @@
 
   <!-- From CISCO-LWAPP-AP-MIB. cLApWlanStatsTable is indexed by cLApSysMacAddress.cLApDot11IfType.cLWlanIndex -->
   <group name="cLApWlanStatsTable" ifType="all">
-      <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.1" instance="cLApWlanStatsEntry" alias="cLApWlsTxPkts"     type="counter64"/>
-      <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.2" instance="cLApWlanStatsEntry" alias="cLApWlsTxOctets"   type="counter64"/>
-      <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.3" instance="cLApWlanStatsEntry" alias="cLApWlsRxPkts"     type="counter64"/>
-      <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.4" instance="cLApWlanStatsEntry" alias="cLApWlsRxOctets"   type="counter64"/>
-      <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.5" instance="cLApWlanStatsEntry" alias="cLApWlsRetransmit" type="counter64"/>
-      <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.6" instance="cLApWlanStatsEntry" alias="cLApWlsAssocCli"   type="integer"/>
-      <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.7" instance="cLApWlanStatsEntry" alias="cLApWlsOnlineUser" type="integer"/>
-      <property instance="cLApWlanStatsEntry" alias="cLApName">
-        <parameter key="source-type" value="ciscoAPMacAddress" />
-        <parameter key="source-alias" value="cLApName" />
-        <parameter key="index-pattern" value="^(.+)\.\d+.\d+$" />
-      </property>
+    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.1" instance="cLApWlanStatsEntry" alias="cLApWlsTxPkts"     type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.2" instance="cLApWlanStatsEntry" alias="cLApWlsTxOctets"   type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.3" instance="cLApWlanStatsEntry" alias="cLApWlsRxPkts"     type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.4" instance="cLApWlanStatsEntry" alias="cLApWlsRxOctets"   type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.5" instance="cLApWlanStatsEntry" alias="cLApWlsRetransmit" type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.6" instance="cLApWlanStatsEntry" alias="cLApWlsAssocCli"   type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.9.9.513.1.9.1.1.7" instance="cLApWlanStatsEntry" alias="cLApWlsOnlineUser" type="integer"/>
+    <property instance="cLApWlanStatsEntry" alias="cLApName">
+      <parameter key="source-type" value="ciscoAPMacAddress" />
+      <parameter key="source-alias" value="cLApName" />
+      <parameter key="index-pattern" value="^(.+)\.\d+.\d+$" />
+    </property>
   </group>
 
   <!-- From AIRESPACE-WIRELESS-MIB. bsnAPTable is indexed by bsnAPDot3MacAddress which has a type of MacAddress -->
