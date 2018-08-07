@@ -195,7 +195,7 @@ angular.module('node-extensions', [])
     } else if ($scope.sysObjectId.indexOf('.1.3.6.1.4.1.25053.3.1.11.') != -1) {
       console.log("Device with ID " + $scope.nodeId + " is a Ruckus SmartZone, loading plugin.");
       return $scope.pluginRuckusSmartZoneData;
-    } else if ($scope.sysObjectId == '.1.3.6.1.4.1.9.1.2170' || $scope.sysObjectId == '.1.3.6.1.4.1.9.1.2370') {
+    } else if (['.1.3.6.1.4.1.9.1.2170','.1.3.6.1.4.1.9.1.2370','.1.3.6.1.4.1.9.1.2371','.1.3.6.1.4.1.9.1.1279'].includes($scope.sysObjectId)) {
       console.log("Device with ID " + $scope.nodeId + " is a Cisco WLC, loading plugin.");
       return $scope.pluginCiscoWlcData;
     }
