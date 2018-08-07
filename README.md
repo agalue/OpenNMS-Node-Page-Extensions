@@ -117,3 +117,7 @@ Then, the next step is register the above plugin inside `getPluginImplementation
 npm install
 npm test
 ```
+
+# Future Improvements
+
+* Add an option to force update the files on the install script, in case of an upgrade and/or a fix (for the Angular App, or the configuration files).
