@@ -367,13 +367,14 @@ angular.module('node-extensions', [])
    * it should populate $scope.title, $scope.columns, and $scope.rows.
    */
   console.debug('Getting plugin implementation...');
+  $scope.loading = true;
   var plugin = $scope.getPluginImplementation();
   if (plugin) {
+    $scope.pluginFound = true;
     console.debug('Plugin found, getting data...');
     $scope.fetchResources($scope.nodeId).then(function(resources) {
       plugin(resources);
       $scope.loading = false;
-      $scope.pluginFound = true;
     });
   } else {
     console.debug('No plugins were found...');
