@@ -4,7 +4,42 @@
 
 'use strict';
 
-angular.module('node-extensions', [])
+angular.module('node-extensions', [
+'ui.bootstrap'
+])
+
+.filter('startFrom', function() {
+  return function(input, start) {
+    start = +start; // convert it to integer
+    if (input) {
+      return input.length < start ? input : input.slice(start);
+    }
+    return [];
+  };
+})
+
+.directive('sort', function() {
+  return {
+    restrict: 'A',
+    transclude: true,
+    templateUrl: 'js/node-extensions/template.sort.html',
+    scope: {
+      order: '=',
+      by: '=',
+      reverse : '='
+    },
+    link: function(scope, element, attrs) {
+      scope.onClick = function () {
+        if( scope.order === scope.by ) {
+           scope.reverse = !scope.reverse;
+        } else {
+          scope.by = scope.order;
+          scope.reverse = false;
+        }
+      };
+    }
+  };
+})
 
 /**
  * @ngdoc directive
@@ -36,12 +71,22 @@ angular.module('node-extensions', [])
  * @requires $scope Angular local scope
  * @requires $http Angular service that facilitates communication with the remote HTTP servers
  * @requires $q Angular promise/deferred implementation
+ * @requires $filter Angular filter
  *
  * @description The controller for managing node extensions
  */
-.controller('NodeExtensionsCtrl', function($scope, $http, $q) {
+.controller('NodeExtensionsCtrl', function($scope, $http, $q, $filter) {
 
-    /**
+  // Filter, sort and pagination variables
+  $scope.searchFilter = null;
+  $scope.filteredRows = [];
+  $scope.paginationPageSize = 20;
+  $scope.paginationMaxSize = 5;
+  $scope.paginationTotalItems = 0;
+  $scope.sortOrder = 'description';
+  $scope.sortReverse = false;
+
+  /**
    * @description Set to true to use bulk requests when retrieving data using the Measurements API
    *              Otherwise, a single request per resource/metric combination will be executed.
    *
@@ -131,6 +176,17 @@ angular.module('node-extensions', [])
    * @returns {string} The panel title (default: 'Extension Panel')
    */
   $scope.title = 'Extension Panel';
+
+  $scope.addRow = function(row) {
+    $scope.rows.push(row);
+    $scope.filteredRows.push(row);
+  };
+
+  $scope.updatePagination = function() {
+    $scope.paginationCurrentPage = 1;
+    $scope.paginationTotalItems = $scope.filteredRows.length;
+    $scope.paginationNumPages = Math.ceil($scope.paginationTotalItems / $scope.paginationPageSize);
+  };
 
   /**
    * @description Requests the value of a metric from a given resource to the Measurements API and updates the chosen row.
@@ -361,7 +417,7 @@ angular.module('node-extensions', [])
           case '3': row.status = 'Upgrading Firmware'; break;
           case '4': row.status = 'Provisioning'; break;
         }
-        $scope.rows.push(row);
+        $scope.addRow(row);
         dataArray.push({
           resource: r,
           metric: 'rzdAPNumSta',
@@ -417,7 +473,7 @@ angular.module('node-extensions', [])
           numStations: '...', // Will be replaced asynchronously
           status: r.stringPropertyAttributes.rszAPConnStatus
         };
-        $scope.rows.push(row);
+        $scope.addRow(row);
         dataArray.push({
           resource: r,
           metric: 'rszAPNumSta',
@@ -482,7 +538,7 @@ angular.module('node-extensions', [])
           case '2': row.status = 'Disassociating'; break;
           case '3': row.status = 'Downloading'; break;
         }
-        $scope.rows.push(row);
+        $scope.addRow(row);
         dataArray.push({
           resource: r,
           metric: 'cLApAssocCliCount',
@@ -517,6 +573,12 @@ angular.module('node-extensions', [])
     console.debug('No plugins were found...');
     $scope.loading = false;
   }
+
+  $scope.$watch('searchFilter', function() {
+    $scope.filteredRows = $filter('filter')($scope.rows, $scope.searchFilter);
+    $scope.updatePagination();
+  });
+
 });
 
 // Bootstrap to a an element with ID 'node-extensions'

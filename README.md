@@ -102,7 +102,7 @@ $scope.pluginResourceCount = function(resources) {
     stats[r.typeLabel] += Object.keys(r.rrdGraphAttributes).length;
   }
   for (var k in stats) {
-    $scope.rows.push({ type: k, count: stats[k] });
+    $scope.addRow({ type: k, count: stats[k] });
   }
 };
 ```

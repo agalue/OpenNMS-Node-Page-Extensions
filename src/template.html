@@ -3,16 +3,22 @@
     <h3 class="panel-title">{{ title }}</h3>
   </div>
   <div class="table-responsive" ng-if="!loading && rows.length > 0">
+    <div class="input-group">
+      <span class="input-group-addon">
+        <span class="glyphicon glyphicon-search"></span>
+      </span>
+      <input class="form-control" type="text" placeholder="Search/Filter" ng-model="searchFilter"/>
+    </div>
     <table class="table table-condensed">
       <thead>
         <tr>
-          <th ng-repeat="col in columns">
+          <th ng-repeat="col in columns" sort order="col.label" by="sortOrder" reverse="sortReverse">
             {{ col.label }}
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="row in rows">
+        <tr ng-repeat="row in filteredRows | orderBy:sortOrder:sortReverse | startFrom:(paginationCurrentPage-1)*paginationPageSize | limitTo:paginationPageSize">
           <td ng-repeat="col in columns">
             {{ row[col.name] }}
           </td>
@@ -20,6 +26,13 @@
      </tbody>
     </table>
   </div>
+  <ul uib-pagination class="pagination-sm"
+      total-items="paginationTotalItems"
+      num-pages="paginationNumPages"
+      ng-model="paginationCurrentPage"
+      max-size="paginationMaxSize"
+      boundary-links="true"
+      ng-show="filteredRows.length > paginationPageSize"></ul>
   <div class="panel-body" ng-if="loading && rows.length == 0">
     <p>Loading data, please wait ...</p>
   </div>
