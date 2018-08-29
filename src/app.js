@@ -43,14 +43,15 @@ angular.module('node-extensions', [])
 
     /**
    * @description Set to true to use bulk requests when retrieving data using the Measurements API
+   *              Otherwise, a single request per resource/metric combination will be executed.
    *
    * @ngdoc property
    * @name NodeExtensionsCtrl#useBulk
    * @propertyOf NodeExtensionsCtrl
-   * @returns {boolean} The use bulk flag (default: false)
+   * @returns {boolean} The use bulk flag (default: true)
    */
   $scope.useBulk;
-  if ($scope.useBulk === undefined) $scope.useBulk = false;
+  if ($scope.useBulk === undefined) $scope.useBulk = true;
 
   /**
    * @description The node ID (external parameter)
