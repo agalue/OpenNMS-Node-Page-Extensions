@@ -41,6 +41,16 @@ angular.module('node-extensions', [])
  */
 .controller('NodeExtensionsCtrl', function($scope, $http, $q) {
 
+    /**
+   * @description Set to true to use bulk requests when retrieving data using the Measurements API
+   *
+   * @ngdoc property
+   * @name NodeExtensionsCtrl#useBulk
+   * @propertyOf NodeExtensionsCtrl
+   * @returns {boolean} The use bulk flag (default: false)
+   */
+  $scope.useBulk = false;
+
   /**
    * @description The node ID (external parameter)
    * Obtained from the directive (named as 'id' on the HTML tag).
@@ -129,27 +139,119 @@ angular.module('node-extensions', [])
    * @methodOf NodeExtensionsCtrl
    * @param {object} resource The OpenNMS Resource object
    * @param {string} metric The name of the desired metric
-   * @param {object} rowObj The row object to be updated on successful retrieval of the data
+   * @param {index} rowIndex The index of the row to be updated on successful retrieval of the data
    * @param {string} rowField The name of row field to update
    */
-  $scope.fetchMetricAndUpdateRow = function(resource, metric, rowObj, rowField) {
+  $scope.fetchMetricAndUpdateRow = function(resource, metric, rowIndex, rowField) {
     console.debug('Getting value for metric ' + resource.id + '.' + metric);
     if (resource.rrdGraphAttributes[metric]) {
       var resourceId = encodeURIComponent(resource.id.replace('%3A',':'));
       $http.get('rest/measurements/' + resourceId + '/' + metric + '?start=-900000')
       .success(function(info) {
         var values = info.columns[0].values.reverse();
-        for (var i=0; i<values.length; i++) {
-          if (values[i] !== 'NaN') {
-            console.debug('Got it: ' + values[i]);
-            rowObj[rowField] = Math.ceil(values[i]); // Use the upward nearest integer.
-            break;
-          }
-        }
+        $scope.rows[rowIndex][rowField] = $scope.getLatestValue(values);
+        console.debug('Updated field ' + rowField + ' from row number ' + rowIndex + ' with value ' + $scope.rows[rowIndex][rowField]);
       });
     } else {
       console.warn('The metric ' + metric + ' is not available for ' + resource.id);
     }
+  };
+
+  /**
+   * @description Requests the values of all the metrics involved at once (bulk requestr from Measurements API and updates the table.
+   * This is an asynchronous operation.
+   *
+   * Each element of the dataArray array contains:
+   * - resource: The resource Id
+   * - metric: The metric Id
+   * - row: The rowIndex of the column to update
+   *
+   * @name NodeExtensionsCtrl:fetchBulkMetricAndUpdateRow
+   * @ngdoc method
+   * @methodOf NodeExtensionsCtrl
+   * @param {array} dataArray The data array
+   * @param {string} rowField The name of the row field to update
+   */
+   $scope.fetchBulkMetricAndUpdateRow = function(dataArray, rowField) {
+    var measurements = {
+      start: 10000,
+      end: 1000,
+      step: 300,
+      maxrows: 5,
+      source: []
+    };
+    for (var i=0; i<dataArray.length; i++) {
+      var metric = dataArray[i].metric;
+      var resource = dataArray[i].resource;
+      var rowIndex = dataArray[i].row;
+      if (resource.rrdGraphAttributes[metric]) {
+        measurements.push[{
+          aggregation: 'AVERAGE',
+          attribute: metric,
+          label: rowIndex,
+          resourceId: resource.id,
+          transient: false
+        }];
+      } else {
+        console.warn('The metric ' + metric + ' is not available for ' + resource.id);
+      }
+    }
+    console.debug('Getting value for ' + measurements.length + ' metrics...');
+    $http.post('rest/measurements/', measurements)
+      .success(function(data) {
+        for (var i=0; i < data.columns.length; i++) {
+          var values = data.columns[i].values.reverse();
+          var rowIndex = parseInt(data.labels[i]);
+          $scope.rows[rowIndex][rowField] = $scope.getLatestValue(values);
+          console.debug('Updated field ' + rowField + ' from row number ' + rowIndex + ' with value ' + $scope.rows[rowIndex][rowField]);
+        }
+      });
+  };
+
+  /**
+   * @description Updates the table using the Measurements API.
+   *
+   * Each element of the dataArray array contains:
+   * - resource: The resource Id
+   * - metric: The metric Id
+   * - row: The rowIndex of the column to update
+   *
+   * @name NodeExtensionsCtrl:updateTable
+   * @ngdoc method
+   * @methodOf NodeExtensionsCtrl
+   * @param {array} dataArray The data array
+   * @param {string} rowField The name of the row field to update
+   */
+  $scope.updateTable = function(dataArray, rowField) {
+    if (dataArray == undefined || dataArray.length == 0) {
+      console.warn('updateTable: dataArray cannot be empty; skipping...');
+    }
+    if ($scope.useBulk) {
+      $scope.fetchBulkMetricAndUpdateRow(dataArray, rowField);
+    } else {
+      for (var i=0; i<dataArray.length; i++) {
+        $scope.fetchMetricAndUpdateRow(dataArray[i].resource, dataArray[i].metric, dataArray[i].row, rowField);
+      }
+    }
+  };
+
+  /**
+   * @description Gets the last value from an array that is not NaN.
+   *
+   * @name NodeExtensionsCtrl:getLatestValue
+   * @ngdoc method
+   * @methodOf NodeExtensionsCtrl
+   * @param {array} values The values array.
+   * @returns {value} The latest value.
+   */
+  $scope.getLatestValue = function(values) {
+    for (var i=0; i<values.length; i++) {
+      if (values[i] !== 'NaN') {
+        console.debug('Got it: ' + values[i]);
+        return Math.ceil(values[i]); // Use the upward nearest integer.
+      }
+    }
+    return null;
   };
 
   /**
@@ -205,6 +307,10 @@ angular.module('node-extensions', [])
   /**
    * @description Plugin implementation for the Zone Director devices.
    * This method should populate the 'columns', 'rows' and the 'title' on the $scope.
+   * For this purpose an array has to be passed to the updateTable method, where each element is an object with 3 elements:
+   * - resource (the resource object from the OpenNMS resources end-point)
+   * - metric (the metricName)
+   * - row (the index of the row to be updated)
    *
    * Requires the following metrics for the SNMP Collector in OpenNMS:
    * 
@@ -234,12 +340,13 @@ angular.module('node-extensions', [])
       { name: 'numStations', label: '# Stations' },
       { name: 'status',      label: 'Status' }
     ];
+    var dataArray = [];
     for (var r of resources) {
       if (r.id.match(/ruckusZDWLANAPEntry/)) {
         var row = {
           description: r.stringPropertyAttributes.rzdAPDescripion,
           ipAddress: r.stringPropertyAttributes.rzdAPIPAddress,
-          numStations: '...', // Will be replaced by fetchMetricAndUpdateRow asynchronously
+          numStations: '...', // Will be replaced asynchronously
           status: 'Unknown' // Default value
         };
         switch (r.stringPropertyAttributes.rzdAPStatus) {
@@ -250,14 +357,23 @@ angular.module('node-extensions', [])
           case '4': row.status = 'Provisioning'; break;
         }
         $scope.rows.push(row);
-        $scope.fetchMetricAndUpdateRow(r, 'rzdAPNumSta', row, 'numStations');
+        dataArray.push({
+          resource: r,
+          metric: 'rzdAPNumSta',
+          row: $scope.rows.length - 1
+        });
       }
     }
+    $scope.updateTable(dataArray, 'numStations');
   };
 
   /**
    * @description Plugin implementation for the Ruckus Smart Zone devices.
    * This method should populate the 'columns', 'rows' and the 'title' on the $scope.
+   * For this purpose an array has to be passed to the updateTable method, where each element is an object with 3 elements:
+   * - resource (the resource object from the OpenNMS resources end-point)
+   * - metric (the metricName)
+   * - row (the index of the row to be updated)
    *
    * Requires the following metrics for the SNMP Collector in OpenNMS:
    * 
@@ -287,23 +403,33 @@ angular.module('node-extensions', [])
       { name: 'numStations', label: '# Stations' },
       { name: 'status',      label: 'Status' }
     ];
+    var dataArray = [];
     for (var r of resources) {
       if (r.id.match(/ruckusSZAPEntry/)) {
         var row = {
           description: r.stringPropertyAttributes.rszAPName,
           ipAddress: r.stringPropertyAttributes.rszAPIp,
-          numStations: '...', // Will be replaced by fetchMetricAndUpdateRow asynchronously
+          numStations: '...', // Will be replaced asynchronously
           status: r.stringPropertyAttributes.rszAPConnStatus
         };
         $scope.rows.push(row);
-        $scope.fetchMetricAndUpdateRow(r, 'rszAPNumSta', row, 'numStations');
+        dataArray.push({
+          resource: r,
+          metric: 'rszAPNumSta',
+          row: $scope.rows.length - 1
+        });
       }
     }
+    $scope.updateTable(dataArray, 'numStations');
   };
 
   /**
    * @description Plugin implementation for the Cisco WLC devices.
    * This method should populate the 'columns', 'rows' and the 'title' on the $scope.
+   * For this purpose an array has to be passed to the updateTable method, where each element is an object with 3 elements:
+   * - resource (the resource object from the OpenNMS resources end-point)
+   * - metric (the metricName)
+   * - row (the index of the row to be updated)
    *
    * Requires the following metrics for the SNMP Collector in OpenNMS:
    * 
@@ -337,12 +463,13 @@ angular.module('node-extensions', [])
       { name: 'numStations', label: '# Stations' },
       { name: 'status',      label: 'Status' }
     ];
+    var dataArray = [];
     for (var r of resources) {
       if (r.id.match(/ciscoAPMacAddress/)) {
         var row = {
           description: r.stringPropertyAttributes.bsnAPName,
           ipAddress: r.stringPropertyAttributes.bsnApIpAddress,
-          numStations: '...', // Will be replaced by fetchMetricAndUpdateRow asynchronously
+          numStations: '...', // Will be replaced asynchronously
           status: 'Unknown' // Default value
         };
         switch (r.stringPropertyAttributes.bsnAPOperStatus) {
@@ -351,9 +478,14 @@ angular.module('node-extensions', [])
           case '3': row.status = 'Downloading'; break;
         }
         $scope.rows.push(row);
-        $scope.fetchMetricAndUpdateRow(r, 'cLApAssocCliCount', row, 'numStations');
+        dataArray.push({
+          resource: r,
+          metric: 'cLApAssocCliCount',
+          row: $scope.rows.length - 1
+        });
       }
     }
+    $scope.updateTable(dataArray, 'numStations');
   };
 
   /**
