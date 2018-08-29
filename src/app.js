@@ -49,7 +49,8 @@ angular.module('node-extensions', [])
    * @propertyOf NodeExtensionsCtrl
    * @returns {boolean} The use bulk flag (default: false)
    */
-  $scope.useBulk = false;
+  $scope.useBulk;
+  if ($scope.useBulk === undefined) $scope.useBulk = false;
 
   /**
    * @description The node ID (external parameter)
@@ -173,10 +174,13 @@ angular.module('node-extensions', [])
    * @param {string} rowField The name of the row field to update
    */
    $scope.fetchBulkMetricAndUpdateRow = function(dataArray, rowField) {
+    var step = 300000;
+    var endTime = new Date().getTime();
+    endTime = endTime - endTime % step + step;
     var measurements = {
-      start: 10000,
-      end: 1000,
-      step: 300,
+      start: endTime - 900000,
+      end: endTime,
+      step: step,
       maxrows: 5,
       source: []
     };
@@ -185,19 +189,19 @@ angular.module('node-extensions', [])
       var resource = dataArray[i].resource;
       var rowIndex = dataArray[i].row;
       if (resource.rrdGraphAttributes[metric]) {
-        measurements.push[{
+        measurements.source.push({
           aggregation: 'AVERAGE',
           attribute: metric,
-          label: rowIndex,
+          label: rowIndex.toString(),
           resourceId: resource.id,
           transient: false
-        }];
+        });
       } else {
         console.warn('The metric ' + metric + ' is not available for ' + resource.id);
       }
     }
-    console.debug('Getting value for ' + measurements.length + ' metrics...');
-    $http.post('rest/measurements/', measurements)
+    console.debug('Getting value for ' + measurements.source.length + ' metrics...');
+    $http.post('rest/measurements', measurements)
       .success(function(data) {
         for (var i=0; i < data.columns.length; i++) {
           var values = data.columns[i].values.reverse();
