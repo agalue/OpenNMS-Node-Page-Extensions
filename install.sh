@@ -41,8 +41,7 @@ echo "Copying Angular Application to $app_dir ..."
 if [ ! -e $app_dir ]; then
   mkdir -p $app_dir
 fi
-cp -f src/app.js $app_dir
-cp -f src/template.html $app_dir
+cp -f src/* $app_dir
 
 echo "Checking node.jsp ..."
 
