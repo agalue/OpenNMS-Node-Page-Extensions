@@ -133,21 +133,21 @@ angular.module('node-extensions', [])
   $scope.title = 'Extension Panel';
 
   /**
-   * @description Requests the value of a metric from a given resource to the Measurements API and updates the chosen row.
-   * This is an asynchronous operation, as it requires to make an HTTP call.
+   * @description Updates a row
+   * Appends a numeric value to a specific field from a specifc row.
    *
    * @name NodeExtensionsCtrl:updateRow
    * @ngdoc method
    * @methodOf NodeExtensionsCtrl
    * @param {number} rowIndex The numeric index of the row to update
    * @param {string} rowField The name of the row field to update
-   * @param {array} values The values array
+   * @param {number} value The value to append
    */
-  $scope.updateRow = function(rowIndex, rowField, values) {
+  $scope.updateRow = function(rowIndex, rowField, value) {
     if ($scope.rows[rowIndex][rowField] === '...') {
       $scope.rows[rowIndex][rowField] = 0;
     }
-    $scope.rows[rowIndex][rowField] += $scope.getLatestValue(values);
+    $scope.rows[rowIndex][rowField] += value;
     console.debug('Updated field ' + rowField + ' from row number ' + rowIndex + ' with value ' + $scope.rows[rowIndex][rowField]);
   };
 
@@ -170,7 +170,7 @@ angular.module('node-extensions', [])
       $http.get('rest/measurements/' + resourceId + '/' + metric + '?start=-900000')
       .success(function(info) {
         var values = info.columns[0].values.reverse();
-        $scope.updateRow(rowIndex, rowField, values);
+        $scope.updateRow(rowIndex, rowField, $scope.getLatestValue(values));
       });
     } else {
       console.warn('The metric ' + metric + ' is not available for ' + resource.id);
@@ -179,7 +179,7 @@ angular.module('node-extensions', [])
 
   /**
    * @description Requests the values of all the metrics involved at once (bulk requestr from Measurements API and updates the table.
-   * This is an asynchronous operation.
+   * This is an asynchronous operation, as it requires to make an HTTP call.
    *
    * Each element of the dataArray array contains:
    * - resource: The resource Id
@@ -225,7 +225,7 @@ angular.module('node-extensions', [])
         for (var i=0; i < data.columns.length; i++) {
           var values = data.columns[i].values.reverse();
           var rowIndex = parseInt(data.labels[i]);
-          $scope.updateRow(rowIndex, rowField, values);
+          $scope.updateRow(rowIndex, rowField, $scope.getLatestValue(values));
         }
       });
   };

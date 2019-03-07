@@ -10,7 +10,12 @@
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="aiWlanEntry" label="Aruba WLAN" resourceLabel="ESSID ${aiWlanESSID}, WLAN ID ${aiWlanIndex}">
+  <resourceType name="aiWlanEntry" label="Aruba WLAN Stats" resourceLabel="ESSID ${aiWlanESSID}, WLAN ID ${aiWlanIndex}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
+  <resourceType name="wlsxMonAPStatsEntry" label="Aruba AP Stats" resourceLabel="AP ${wlanAPName}, Radio #${monRadioNumber}, ESSID ${monAPESSID}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
@@ -63,12 +68,36 @@
     <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.2"  instance="aiWlanEntry" alias="aiWlanIndex"         type="string"/>
     <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.3"  instance="aiWlanEntry" alias="aiWlanESSID"         type="string"/>
     <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.4"  instance="aiWlanEntry" alias="aiWlanMACAddress"    type="string"/>
-    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.5"  instance="aiWlanEntry" alias="aiWlanTxTotalFrames" type="counter32"/>
-    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.6"  instance="aiWlanEntry" alias="aiWlanTxDataFrames"  type="counter32"/>
-    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.7"  instance="aiWlanEntry" alias="aiWlanTxDataBytes"   type="counter32"/>
-    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.8"  instance="aiWlanEntry" alias="aiWlanRxTotalFrames" type="counter32"/>
-    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.9"  instance="aiWlanEntry" alias="aiWlanRxDataFrames"  type="counter32"/>
-    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.10" instance="aiWlanEntry" alias="aiWlanRxDataBytes"   type="counter32"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.5"  instance="aiWlanEntry" alias="aiWlanTxTotalFrames" type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.6"  instance="aiWlanEntry" alias="aiWlanTxDataFrames"  type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.7"  instance="aiWlanEntry" alias="aiWlanTxDataBytes"   type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.8"  instance="aiWlanEntry" alias="aiWlanRxTotalFrames" type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.9"  instance="aiWlanEntry" alias="aiWlanRxDataFrames"  type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.3.3.1.2.3.1.10" instance="aiWlanEntry" alias="aiWlanRxDataBytes"   type="counter"/>
+  </group>
+
+  <!-- From WLSX-MON-MIB -->
+  <group name="wlsxMonAPStatsTable" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.1"  instance="wlsxMonAPStatsEntry" alias="monPhyAddress"     type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.2"  instance="wlsxMonAPStatsEntry" alias="monRadioNumber"    type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.3"  instance="wlsxMonAPStatsEntry" alias="monitoredApBSSID"  type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.6"  instance="wlsxMonAPStatsEntry" alias="monAPNumClients"   type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.7"  instance="wlsxMonAPStatsEntry" alias="monAPTxPkts"       type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.8"  instance="wlsxMonAPStatsEntry" alias="monAPTxBytes"      type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.9"  instance="wlsxMonAPStatsEntry" alias="monAPRxPkts"       type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.10" instance="wlsxMonAPStatsEntry" alias="monAPRxBytes"      type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.11" instance="wlsxMonAPStatsEntry" alias="monAPTxDeauth"     type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.12" instance="wlsxMonAPStatsEntry" alias="monAPRxDeauth"     type="counter"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.13" instance="wlsxMonAPStatsEntry" alias="monAPChannThr"     type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.20" instance="wlsxMonAPStatsEntry" alias="monAPChannErrRate" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.21" instance="wlsxMonAPStatsEntry" alias="monAPESSID"        type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.6.6.1.1.1.22" instance="wlsxMonAPStatsEntry" alias="monAPRSSI"         type="integer"/>
+    <!-- External Relations -->
+    <property instance="wlsxMonAPStatsEntry" alias="wlanAPName">
+      <parameter key="source-type" value="wlsxWlanAPEntry" />
+      <parameter key="source-alias" value="wlanAPName" />
+      <parameter key="index-pattern" value="^(.+)\.\d+\.\d+$" />
+    </property>
   </group>
 
 </datacollection-group>
