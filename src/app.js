@@ -136,12 +136,31 @@ angular.module('node-extensions', [])
    * @description Requests the value of a metric from a given resource to the Measurements API and updates the chosen row.
    * This is an asynchronous operation, as it requires to make an HTTP call.
    *
+   * @name NodeExtensionsCtrl:updateRow
+   * @ngdoc method
+   * @methodOf NodeExtensionsCtrl
+   * @param {number} rowIndex The numeric index of the row to update
+   * @param {string} rowField The name of the row field to update
+   * @param {array} values The values array
+   */
+  $scope.updateRow = function(rowIndex, rowField, values) {
+    if ($scope.rows[rowIndex][rowField] === '...') {
+      $scope.rows[rowIndex][rowField] = 0;
+    }
+    $scope.rows[rowIndex][rowField] += $scope.getLatestValue(values);
+    console.debug('Updated field ' + rowField + ' from row number ' + rowIndex + ' with value ' + $scope.rows[rowIndex][rowField]);
+  };
+
+  /**
+   * @description Requests the value of a metric from a given resource to the Measurements API and updates the chosen row.
+   * This is an asynchronous operation, as it requires to make an HTTP call.
+   *
    * @name NodeExtensionsCtrl:fetchMetricAndUpdateRow
    * @ngdoc method
    * @methodOf NodeExtensionsCtrl
    * @param {object} resource The OpenNMS Resource object
    * @param {string} metric The name of the desired metric
-   * @param {index} rowIndex The index of the row to be updated on successful retrieval of the data
+   * @param {number} rowIndex The index of the row to be updated on successful retrieval of the data
    * @param {string} rowField The name of row field to update
    */
   $scope.fetchMetricAndUpdateRow = function(resource, metric, rowIndex, rowField) {
@@ -151,8 +170,7 @@ angular.module('node-extensions', [])
       $http.get('rest/measurements/' + resourceId + '/' + metric + '?start=-900000')
       .success(function(info) {
         var values = info.columns[0].values.reverse();
-        $scope.rows[rowIndex][rowField] = $scope.getLatestValue(values);
-        console.debug('Updated field ' + rowField + ' from row number ' + rowIndex + ' with value ' + $scope.rows[rowIndex][rowField]);
+        $scope.updateRow(rowIndex, rowField, values);
       });
     } else {
       console.warn('The metric ' + metric + ' is not available for ' + resource.id);
@@ -207,8 +225,7 @@ angular.module('node-extensions', [])
         for (var i=0; i < data.columns.length; i++) {
           var values = data.columns[i].values.reverse();
           var rowIndex = parseInt(data.labels[i]);
-          $scope.rows[rowIndex][rowField] = $scope.getLatestValue(values);
-          console.debug('Updated field ' + rowField + ' from row number ' + rowIndex + ' with value ' + $scope.rows[rowIndex][rowField]);
+          $scope.updateRow(rowIndex, rowField, values);
         }
       });
   };
@@ -487,6 +504,91 @@ angular.module('node-extensions', [])
           resource: r,
           metric: 'cLApAssocCliCount',
           row: $scope.rows.length - 1
+        });
+      }
+    }
+    $scope.updateTable(dataArray, 'numStations');
+  };
+
+  /**
+   * @description Plugin implementation for Aruba devices.
+   * This method should populate the 'columns', 'rows' and the 'title' on the $scope.
+   * For this purpose an array has to be passed to the updateTable method, where each element is an object with 3 elements:
+   * - resource (the resource object from the OpenNMS resources end-point)
+   * - metric (the metricName)
+   * - row (the index of the row to be updated)
+   *
+   * Requires the following metrics for the SNMP Collector in OpenNMS:
+   * 
+   * <resourceType name="wlsxWlanAPEntry" label="Aruba AP" resourceLabel="AP ${wlanAPName} (${wlanAPMacAddress})">
+   *   <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+   *   <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   * </resourceType>
+   * <resourceType name="wlsxWlanRadioEntry" label="Aruba AP/Radio" resourceLabel="AP ${wlAPRadioAPName} Radio #${wlAPRadioNumber}">
+   *   <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+   *   <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   * </resourceType>
+   * 
+   * <!-- From WLSX-WLAN-MIB -->
+   * <group name="wlsxWlanAPTable" ifType="all">
+   *   <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.1" instance="wlsxWlanAPEntry" alias="wlanAPMacAddress" type="string"/>
+   *   <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.2" instance="wlsxWlanAPEntry" alias="wlanAPIpAddress" type="string"/>
+   *   <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.3" instance="wlsxWlanAPEntry" alias="wlanAPName" type="string"/>
+   *   <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.19" instance="wlsxWlanAPEntry" alias="wlanAPStatus" type="string"/>
+   * </group>
+   * <group name="wlsxWlanRadioTable" ifType="all">
+   *   <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.5.2.1.5.1.1"  instance="wlsxWlanRadioEntry" alias="wlAPRadioNumber" type="string"/>
+   *   <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.5.2.1.5.1.7"  instance="wlsxWlanRadioEntry" alias="wlAPRadioNumSta" type="integer"/>
+   *   <mibObj oid=".1.3.6.1.4.1.14823.2.2.1.5.2.1.5.1.16" instance="wlsxWlanRadioEntry" alias="wlAPRadioAPName" type="string"/>
+   *   <property instance="wlsxWlanRadioEntry" alias="wlanAPIpAddress">
+   *     <parameter key="source-type" value="wlsxWlanAPEntry" />
+   *     <parameter key="source-alias" value="wlanAPIpAddress" />
+   *     <parameter key="index-pattern" value="^(.+)\.\d+$" />
+   *   </property>
+   *   <property instance="wlsxWlanRadioEntry" alias="wlanAPStatus">
+   *     <parameter key="source-type" value="wlsxWlanAPEntry" />
+   *     <parameter key="source-alias" value="wlanAPStatus" />
+   *     <parameter key="index-pattern" value="^(.+)\.\d+$" />
+   *   </property>
+   * </group>
+   * 
+   * @name NodeExtensionsCtrl:pluginArubaData
+   * @ngdoc method
+   * @methodOf NodeExtensionsCtrl
+   * @param {array} resources The list of OpenNMS Resources from the Resources ReST API
+   */
+  $scope.pluginArubaData = function(resources) {
+    $scope.title = 'Aruba Access Points';
+    $scope.columns = [
+      { name: 'description', label: 'Description' },
+      { name: 'ipAddress',   label: 'IP Address' },
+      { name: 'numStations', label: '# Stations' },
+      { name: 'status',      label: 'Status' }
+    ];
+    var dataArray = [];
+    for (var r of resources) {
+      if (r.id.match(/wlsxWlanRadioEntry/)) {
+        var row = {
+          description: r.stringPropertyAttributes.wlAPRadioAPName,
+          ipAddress: r.stringPropertyAttributes.wlanAPIpAddress,
+          numStations: '...', // Will be replaced asynchronously
+          status: r.stringPropertyAttributes.wlanAPStatus
+        };
+        var foundIndex = -1;
+        for (var i = 0; i < $scope.rows.length; i++) {
+          if ($scope.rows[i].description == row.description) {
+            foundIndex = i;
+            break;
+          }
+        }
+        if (foundIndex < 0) {
+          $scope.rows.push(row);
+          foundIndex = $scope.rows.length - 1;
+        }
+        dataArray.push({
+          resource: r,
+          metric: 'wlAPRadioNumSta',
+          row: foundIndex
         });
       }
     }
