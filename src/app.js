@@ -572,8 +572,12 @@ angular.module('node-extensions', [])
           description: r.stringPropertyAttributes.wlAPRadioAPName,
           ipAddress: r.stringPropertyAttributes.wlanAPIpAddress,
           numStations: '...', // Will be replaced asynchronously
-          status: r.stringPropertyAttributes.wlanAPStatus
+          status: 'Unknown' // Default value
         };
+        switch (r.stringPropertyAttributes.wlanAPStatus) {
+          case '1': row.status = 'Up'; break;
+          case '2': row.status = 'Down'; break;
+        }
         var foundIndex = -1;
         for (var i = 0; i < $scope.rows.length; i++) {
           if ($scope.rows[i].description == row.description) {
