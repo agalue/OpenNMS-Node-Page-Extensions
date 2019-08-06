@@ -168,8 +168,8 @@ angular.module('node-extensions', [])
     if (resource.rrdGraphAttributes[metric]) {
       var resourceId = encodeURIComponent(resource.id.replace('%3A',':'));
       $http.get('rest/measurements/' + resourceId + '/' + metric + '?start=-900000')
-      .success(function(info) {
-        var values = info.columns[0].values.reverse();
+      .then(function(response) {
+        var values = response.data.columns[0].values.reverse();
         $scope.updateRow(rowIndex, rowField, $scope.getLatestValue(values));
       });
     } else {
@@ -221,7 +221,8 @@ angular.module('node-extensions', [])
     }
     console.debug('Getting value for ' + measurements.source.length + ' metrics...');
     $http.post('rest/measurements', measurements)
-      .success(function(data) {
+      .then(function(response) {
+        var data = response.data;
         for (var i=0; i < data.columns.length; i++) {
           var values = data.columns[i].values.reverse();
           var rowIndex = parseInt(data.labels[i]);
@@ -289,12 +290,12 @@ angular.module('node-extensions', [])
   $scope.fetchResources = function(resourceId) {
     var deferred = $q.defer();
     $http.get('rest/resources/fornode/' + resourceId)
-      .success(function(data) {
-        deferred.resolve(data.children.resource);
+      .then(function(response) {
+        deferred.resolve(response.data.children.resource);
       })
-      .error(function() {
+      .catch(function(err) {
         $scope.loading = false;
-        deferred.reject();
+        deferred.reject(err);
       });
     return deferred.promise;
   };

@@ -1,0 +1,17 @@
+Aruba:
+
+AP Information (including APname, status, IP):
+WLSX-WLAN-MIB::wlsxWlanAPTable (index: wlanAPMacAddress)
+
+Stats per Radio (includes numClients, numBSSIDs, APName)
+WLSX-WLAN-MIB::wlsxWlanRadioTable (index: wlanAPMacAddress, wlanAPRadioNumber)
+
+Stats per BSSID (includes ESSID, numStations)
+WLSX-WLAN-MIB::wlsxWlanAPBssidTable (index: wlanAPMacAddress, wlanAPRadioNumber, wlanAPBSSID)
+
+Number of stations per ESSID
+WLSX-WLAN-MIB::wlsxWlanESSIDTable (index: wlanESSID)
+
+Stats per BSSID (includes TX/RX, numStations)
+WLSX-MON-MIB::wlsxMonAPStatsTable (index: monPhyAddress, monRadioNumber, monitoredApBSSID)
+
