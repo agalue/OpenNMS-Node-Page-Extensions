@@ -319,6 +319,9 @@ angular.module('node-extensions', [])
     } else if ($scope.sysObjectId.indexOf('.1.3.6.1.4.1.25053.3.1.11.') != -1) {
       console.log("Device with ID " + $scope.nodeId + " is a Ruckus SmartZone, loading plugin.");
       return $scope.pluginRuckusSmartZoneData;
+    } else if ($scope.sysObjectId.indexOf('.1.3.6.1.4.1.25053.3.1.10') != -1) {
+      console.log("Device with ID " + $scope.nodeId + " is a Ruckus SCG, loading plugin.");
+      return $scope.pluginRuckusSCGData;
     } else if (['.1.3.6.1.4.1.9.1.2170','.1.3.6.1.4.1.9.1.2370','.1.3.6.1.4.1.9.1.2371','.1.3.6.1.4.1.9.1.1279'].includes($scope.sysObjectId)) {
       console.log("Device with ID " + $scope.nodeId + " is a Cisco WLC, loading plugin.");
       return $scope.pluginCiscoWlcData;
@@ -438,6 +441,62 @@ angular.module('node-extensions', [])
         dataArray.push({
           resource: r,
           metric: 'rszAPNumSta',
+          row: $scope.rows.length - 1
+        });
+      }
+    }
+    $scope.updateTable(dataArray, 'numStations');
+  };
+
+  /**
+   * @description Plugin implementation for the SCG devices.
+   * This method should populate the 'columns', 'rows' and the 'title' on the $scope.
+   * For this purpose an array has to be passed to the updateTable method, where each element is an object with 3 elements:
+   * - resource (the resource object from the OpenNMS resources end-point)
+   * - metric (the metricName)
+   * - row (the index of the row to be updated)
+   *
+   * Requires the following metrics for the SNMP Collector in OpenNMS:
+   * 
+   * <resourceType name="ruckusSCGAPEntry" label="Ruckus SCG AP" resourceLabel="${rscgAPName}">
+   *   <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+   *   <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   * </resourceType>
+   * 
+   * <!-- From RUCKUS-SCG-WLAN-MIB; SCG Devices -->
+   * <group name="ruckusSCGAPTable" ifType="all">
+   *   <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.5"  instance="ruckusSCGAPEntry" alias="rscgAPName"       type="string"/>
+   *   <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.10" instance="ruckusSCGAPEntry" alias="rscgAPIp"         type="string"/>
+   *   <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.15" instance="ruckusSCGAPEntry" alias="rscgAPNumSta"     type="integer"/>
+   *   <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.16" instance="ruckusSCGAPEntry" alias="rscgAPConnStatus" type="string"/>
+   * </group>
+   *
+   * @name NodeExtensionsCtrl:pluginRuckusSCGData
+   * @ngdoc method
+   * @methodOf NodeExtensionsCtrl
+   * @param {array} resources The list of OpenNMS Resources from the Resources ReST API
+   */
+  $scope.pluginRuckusSCGData = function(resources) {
+    $scope.title = 'Ruckus SCG Access Points';
+    $scope.columns = [
+      { name: 'description', label: 'Description' },
+      { name: 'ipAddress',   label: 'IP Address' },
+      { name: 'numStations', label: '# Stations' },
+      { name: 'status',      label: 'Status' }
+    ];
+    var dataArray = [];
+    for (var r of resources) {
+      if (r.id.match(/ruckusSCGAPEntry/)) {
+        var row = {
+          description: r.stringPropertyAttributes.rscgAPName,
+          ipAddress: r.stringPropertyAttributes.rscgAPIp,
+          numStations: '...', // Will be replaced asynchronously
+          status: r.stringPropertyAttributes.rscgAPConnStatus
+        };
+        $scope.rows.push(row);
+        dataArray.push({
+          resource: r,
+          metric: 'rscgAPNumSta',
           row: $scope.rows.length - 1
         });
       }

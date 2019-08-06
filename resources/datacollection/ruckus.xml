@@ -20,6 +20,11 @@
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
 
+  <resourceType name="ruckusSCGAPEntry" label="Ruckus SCG AP" resourceLabel="${rscgAPName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
   <!-- From RUCKUS-ZD-WLAN-MIB; -->
 
   <!-- ZoneDirector Chassis -->
@@ -93,6 +98,21 @@
     <!-- Data -->
     <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.30" instance="ruckusSZAPEntry" alias="rszAPRXBytes" type="counter64"/>
     <mibObj oid=".1.3.6.1.4.1.25053.1.4.2.1.1.2.2.1.31" instance="ruckusSZAPEntry" alias="rszAPTXBytes" type="counter64"/>
+  </group>
+
+  <!-- From RUCKUS-SCG-WLAN-MIB -->
+
+  <!-- SCG Access Points Statistics -->
+  <group name="ruckusSCGAPTable" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.5" instance="ruckusSCGAPEntry" alias="rscgAPName" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.10" instance="ruckusSCGAPEntry" alias="rscgAPIp" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.12" instance="ruckusSCGAPEntry" alias="rscgAPExtIp" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.15" instance="ruckusSCGAPEntry" alias="rscgAPNumSta" type="integer"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.16" instance="ruckusSCGAPEntry" alias="rscgAPConnStatus" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.17" instance="ruckusSCGAPEntry" alias="rscgAPRegStatus" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.22" instance="ruckusSCGAPEntry" alias="rscgAPDescription" type="string"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.30" instance="ruckusSCGAPEntry" alias="rscgAPRXBytes" type="counter64"/>
+    <mibObj oid=".1.3.6.1.4.1.25053.1.3.2.1.1.2.2.1.31" instance="ruckusSCGAPEntry" alias="rscgAPTXBytes" type="counter64"/>
   </group>
 
   <!-- System Definitions -->

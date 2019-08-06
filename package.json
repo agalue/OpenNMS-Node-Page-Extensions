@@ -9,13 +9,13 @@
         "url": "https://github.com/agalue/OpenNMS-Node-Page-Extensions"
     },
     "devDependencies": {
-        "angular-mocks": "^1.5.11",
-        "eslint": "^5.15.1",
-        "jest": "^24.3.0"
+        "angular-mocks": "^1.7.8",
+        "eslint": "^6.0.1",
+        "jest": "^24.8.0"
     },
     "dependencies": {
-        "angular": "^1.5.11",
-        "bootstrap": "^3.3.7"
+        "angular": "^1.7.8",
+        "bootstrap": "^4.3.1"
     },
     "scripts": {
         "test": "jest"
