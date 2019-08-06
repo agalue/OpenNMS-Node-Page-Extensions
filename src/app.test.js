@@ -135,8 +135,8 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus ZoneDirector with useBulk=
 
   // Initializing Controller
 
-  createController(1, '.1.3.6.1.4.1.25053.3.1.5.15', false);
-  httpBackend.flush();
+  await createController(1, '.1.3.6.1.4.1.25053.3.1.5.15', false);
+  await httpBackend.flush();
 
   // Checking data
 
