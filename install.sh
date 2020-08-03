@@ -80,7 +80,7 @@ if ! grep --quiet 'src="js/node-extensions/app.js"' $node_jsp; then
   else
     data="<script type=\\\"text/javascript\\\" src=\\\"js/node-extensions/app.js\\\"></script>"
     sed -r -i "s|[<]/script[>]|&\n$data|" $node_jsp
-    sed -r -i '/bootstrap/s/3/4' $app_dir/app.js
+    sed -r -i '/template.bootstrap/s/3/4/' $app_dir/app.js
   fi
   mv -f /tmp/_node.jsp $node_jsp
 else
