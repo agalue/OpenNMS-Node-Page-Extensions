@@ -1,0 +1,29 @@
+<div class="card" ng-if="pluginFound">
+  <div class="card-header">
+    <span>{{ title }}</span>
+  </div>
+  <div ng-if="!loading && rows.length > 0">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th ng-repeat="col in columns">
+            {{ col.label }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="row in rows">
+          <td ng-repeat="col in columns">
+            {{ row[col.name] }}
+          </td>
+        </tr>
+     </tbody>
+    </table>
+  </div>
+  <div class="card-body" ng-if="loading && rows.length == 0">
+    <p>Loading data, please wait ...</p>
+  </div>
+  <div class="card-body" ng-if="!loading && rows.length == 0">
+    <p>There is no data for this node, plese check the configuration ...</p>
+  </div>
+</div>
