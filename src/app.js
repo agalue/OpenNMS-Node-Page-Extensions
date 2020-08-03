@@ -23,7 +23,7 @@ angular.module('node-extensions', [])
       nodeId: '@nodeid',
       sysObjectId: '@sysobjectid'
     },
-    templateUrl: 'js/node-extensions/template.html',
+    templateUrl: 'js/node-extensions/template.bootstrap3.html',
     controller: 'NodeExtensionsCtrl'
   };
 })
