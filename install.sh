@@ -79,10 +79,11 @@ if ! grep --quiet 'src="js/node-extensions/app.js"' $node_jsp; then
   if [ $boostrap_version -eq 3 ]; then
     data="<jsp:param name=\\\"script\\\" value=\\'<script type=\\\"text/javascript\\\" src=\\\"js/node-extensions/app.js\\\"></script>\\' />"
     sed -r -i "s|[<]/jsp:include[>]|$data\n&|" $node_jsp
+    sed -r -i "s/template.bootstrap./template.bootstrap3/" $app_dir/app.js
   else
     data="<script type=\\\"text/javascript\\\" src=\\\"js/node-extensions/app.js\\\"></script>"
     sed -r -i "s|[<]/script[>]|&\n$data|" $node_jsp
-    sed -r -i '/template.bootstrap/s/3/4/' $app_dir/app.js
+    sed -r -i "s/template.bootstrap./template.bootstrap4/" $app_dir/app.js
   fi
   mv -f /tmp/_node.jsp $node_jsp
 else
@@ -118,8 +119,8 @@ for file in resources/datacollection/*.xml; do
   fi
   dcg_name=$(grep 'datacollection-group.*name="' $file | sed 's/.*name="//' | sed 's/".*//')
   if ! grep --quiet "dataCollectionGroup=\"$dcg_name\"" $node_jsp; then
-      data="      <include-collection dataCollectionGroup=\"$dcg_name\"/>"
-      sed -r -i "s|[<]/rrd[>]|&\n$data|" $data_collection_xml
+    data="      <include-collection dataCollectionGroup=\"$dcg_name\"/>"
+    sed -r -i "s|[<]/rrd[>]|&\n$data|" $data_collection_xml
   fi
 done
 
