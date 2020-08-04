@@ -167,7 +167,7 @@ test('Controller: NodeExtensionsCtrl: checking Ruckus ZoneDirector with useBulk=
     start: startTime,
     end: endTime,
     step: step,
-    maxrows: 5,
+    maxrows: 10,
     source: [{
       aggregation: 'AVERAGE',
       attribute: 'rzdAPNumSta',
