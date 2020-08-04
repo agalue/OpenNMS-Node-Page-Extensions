@@ -73,6 +73,7 @@ cp -f src/template*.html $app_dir
 echo "Checking node.jsp ..."
 
 if ! grep --quiet 'src="js/node-extensions/app.js"' $node_jsp; then
+  cp $node_jsp $node_jsp.bak
   echo "Adding a reference to the Angular App..."
   if [ $boostrap_version -eq 3 ]; then
     data="<jsp:param name=\\\"script\\\" value=\\'<script type=\\\"text/javascript\\\" src=\\\"js/node-extensions/app.js\\\"></script>\\' />"
