@@ -41,7 +41,7 @@ angular.module('node-extensions', [])
  */
 .controller('NodeExtensionsCtrl', function($scope, $http, $q) {
 
-    /**
+  /**
    * @description Set to true to use bulk requests when retrieving data using the Measurements API
    *              Otherwise, a single request per resource/metric combination will be executed.
    *
@@ -52,6 +52,17 @@ angular.module('node-extensions', [])
    */
   $scope.useBulk;
   if ($scope.useBulk === undefined) $scope.useBulk = true;
+
+ /**
+   * @description Maximum amount of rows to request per metric.
+   *              RRDtool Xport utility expects a minimum of 10.
+   *
+   * @ngdoc property
+   * @name NodeExtensionsCtrl#maxRows
+   * @propertyOf NodeExtensionsCtrl
+   * @returns {integer} The maximum rows (default: 10)
+   */
+  $scope.maxRows = 10;
 
   /**
    * @description The node ID (external parameter)
@@ -200,7 +211,7 @@ angular.module('node-extensions', [])
       start: endTime - 900000,
       end: endTime,
       step: step,
-      maxrows: 5,
+      maxrows: $scope.maxRows,
       source: []
     };
     for (var i=0; i<dataArray.length; i++) {
