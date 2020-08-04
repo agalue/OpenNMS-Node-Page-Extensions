@@ -59,6 +59,7 @@ echo "Assuming Bootstrap $boostrap_version..."
 echo "Installing the Node Extensions..."
 
 webapp_dir=$onms_home/jetty-webapps/opennms
+data_collection_xml=$onms_home/etc/datacollection-config.xml
 data_collection_dir=$onms_home/etc/datacollection
 node_jsp=$webapp_dir/element/node.jsp
 app_dir=$webapp_dir/js/node-extensions
@@ -111,6 +112,14 @@ for file in resources/datacollection/*.xml; do
     cp $file $data_collection_dir
   else
     echo "$xml already exist, assuming it is correct."
+  fi
+  if [ ! -e "$data_collection_xml.bak" ]; then
+    cp $data_collection_xml $data_collection_xml.bak
+  fi
+  dcg_name=$(grep 'datacollection-group.*name="' $file | sed 's/.*name="//' | sed 's/".*//')
+  if ! grep --quiet "dataCollectionGroup=\"$dcg_name\"" $node_jsp; then
+      data="      <include-collection dataCollectionGroup=\"$dcg_name\"/>"
+      sed -r -i "s|[<]/rrd[>]|&\n$data|" $data_collection_xml
   fi
 done
 

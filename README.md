@@ -92,7 +92,7 @@ This custom tag renders a table widget with the data only when there is a plugin
 
 Inside [src/app.js](srv/app/js), each plugin shows which data should be collected in order to use the plugin. OpenNMS must be collecting the data in order to render the panel; otherwise, nothing will be displayed on the node page.
 
-To simplify the implementation process, the [resources](resources) directory contains a suggested configuration not only to cover the needs of this application but also to collect some basic statistics from the involved devices.
+To simplify the implementation process, the [resources](resources) directory contains a suggested configuration not only to cover the needs of this application but also to collect some basic statistics from the involved devices.  These files must be copied to `$OPENNMS_HOME/etc/datacollection`, and a reference to the name of each `datacollection-group` should be added to the appropriate collection inside `$OPENNMS_HOME/etc/datacolllection-config.xml`.
 
 # Add new implementations
 
